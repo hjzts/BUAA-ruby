@@ -1,6 +1,6 @@
 <%= form_with(model: blog) do |form| %>
   <% if blog.errors.any? %>
-    <div style="color: orange">
+    <div style="color: red">
       <h2><%= pluralize(blog.errors.count, "error") %> prohibited this blog from being saved:</h2>
 
       <ul>
@@ -11,17 +11,17 @@
     </div>
   <% end %>
 
-  <div class="field">
+  <div>
     <%= form.label :title, style: "display: block" %>
     <%= form.text_field :title %>
   </div>
 
-  <div class="field">
+  <div>
     <%= form.label :content, style: "display: block" %>
     <%= form.text_area :content %>
   </div>
 
-  <div class="actions">
+  <div>
     <%= form.submit %>
   </div>
 <% end %>

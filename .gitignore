@@ -35,6 +35,36 @@
 /blog0/config/master.key
 
 # Ignore bundler config.
+/blog/.bundle
+
+# Ignore all environment files (except templates).
+/blog/.env*
+!/blog/.env*.erb
+
+# Ignore all logfiles and tempfiles.
+/blog/log/*
+/blog/tmp/*
+!/blog/log/.keep
+!/blog/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/blog/tmp/pids/*
+!/blog/tmp/pids/
+!/blog/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/blog/storage/*
+!/blog/storage/.keep
+/blog/tmp/storage/*
+!/blog/tmp/storage/
+!/blog/tmp/storage/.keep
+
+/blog/public/assets
+
+# Ignore master key for decrypting credentials and more.
+/blog/config/master.key
+
+# Ignore bundler config.
 /blog4/.bundle
 
 # Ignore all environment files (except templates).

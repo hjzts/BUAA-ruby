@@ -13,11 +13,6 @@ class BlogsController < ApplicationController
   # GET /blogs/new
   def new
     @blog = Blog.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml {render :xml => @blog}
-    end
   end
 
   # GET /blogs/1/edit

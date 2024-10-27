@@ -1,0 +1,15 @@
+<h1>Listing blogs</h1>
+<div class=“blogs">
+<% @blogs.each do |blog| %>
+<div class=”blog”>
+   <%= link_to blog.title, blog %> <br>  
+   Posted <%= time_ago_in_words blog.created_at %> ago. | 
+   <%= link_to 'Edit', edit_blog_path(blog) %>
+   <%= link_to 'Destroy', blog, data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %>
+   <pre><%= blog.content %></pre>
+</div>
+<% end %>
+</div>
+
+<br>
+<%= link_to 'New Blog', new_blog_path %>
