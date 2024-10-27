@@ -5,6 +5,36 @@
 # `$XDG_CONFIG_HOME/git/ignore` or `~/.config/git/ignore`
 
 # Ignore bundler config.
+/blog0/.bundle
+
+# Ignore all environment files (except templates).
+/blog0/.env*
+!/blog0/.env*.erb
+
+# Ignore all logfiles and tempfiles.
+/blog0/log/*
+/blog0/tmp/*
+!/blog0/log/.keep
+!/blog0/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/blog0/tmp/pids/*
+!/blog0/tmp/pids/
+!/blog0/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/blog0/storage/*
+!/blog0/storage/.keep
+/blog0/tmp/storage/*
+!/blog0/tmp/storage/
+!/blog0/tmp/storage/.keep
+
+/blog0/public/assets
+
+# Ignore master key for decrypting credentials and more.
+/blog0/config/master.key
+
+# Ignore bundler config.
 /blog4/.bundle
 
 # Ignore all environment files (except templates).
