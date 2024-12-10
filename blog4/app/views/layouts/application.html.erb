@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<%= javascript_include_tag "application", "data-turbo-track": "reload" %>
 <html>
   <head>
-    <title>Hugo 的 blog</title>
-    <%= stylesheet_link_tag    "application", :media => "all" %>
-    <%= javascript_include_tag "application" %>
+    <title><%= content_for(:title) || "Hugo 的 blog" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.png" type="image/png">
@@ -17,10 +19,14 @@
 
   <body>
     <div id="banner">
-      <h1>My Blogs</h1>
+      <h1>My Blogs IV</h1>
     </div>
     <div id="left-panel">
-      Left Panel
+            <% if current_user %>
+        <%= current_user.email %> Logged in.<br/>
+      <% else %>
+        Please Log in
+      <% end %>
     </div>
 
     <div id="main-panel">
@@ -30,5 +36,6 @@
     <div id="footer">
       Copyright hugo &copy; 2024
     </div>
+
   </body>
 </html>
