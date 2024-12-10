@@ -54,15 +54,21 @@ class BlogsController < ApplicationController
 
   # DELETE /blogs/1 or /blogs/1.json
   def destroy
-    @blog.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to blogs_path, status: :see_other, notice: "Blog was successfully destroyed." }
-      format.json { head :no_content }
+    if @blog.destroy
+      respond_to do |format|
+        format.html { redirect_to blogs_path, status: :see_other, notice: "Blog was successfully destroyed." }
+        format.json { head :no_content }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to blogs_path, alert: "Failed to destroy the blog." }
+        format.json { render json: @blog.errors, status: :unprocessable_entity }
+      end
     end
   end
 
   private
+  
     # Use callbacks to share common setup or constraints between actions.
     def set_blog
       @blog = Blog.find(params[:id])

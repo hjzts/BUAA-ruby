@@ -3,13 +3,14 @@
 <%= render @blog %>
 
 <div>
-<%= link_to 'Edit', edit_blog_path(@blog) %> |
-<%= link_to 'Destroy', @blog, data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %> |
+<%= link_to 'Edit this blog', edit_blog_path(@blog) %> |
 <%= link_to 'See All Posts', blogs_path %>
 
+<%= button_to 'Destroy this blog', @blog, data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %> 
+   
 <h2>Comments</h2>
 <div id="comments">
-<%= render :partial => @blog.comments %>
+<%= render :partial => @blog.comments %>                 
 </div>
 
 
