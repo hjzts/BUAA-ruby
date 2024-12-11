@@ -1,9 +1,8 @@
-<!-- src/views/LoginView.vue -->
 <template>
-    <v-container>
-        <v-row justify="center">
-            <v-col cols="12" sm="8" md="6">
-                <v-card>
+    <v-app>
+        <v-container fluid class="d-flex justify-center align-center" style="min-height: 100vh;">
+            <div class="container-with-border">
+                <v-card class="responsive-card">
                     <v-card-title>Login</v-card-title>
                     <v-card-text>
                         <v-form @submit.prevent="handleSubmit">
@@ -15,9 +14,9 @@
                         </v-form>
                     </v-card-text>
                 </v-card>
-            </v-col>
-        </v-row>
-    </v-container>
+            </div>
+        </v-container>
+    </v-app>
 </template>
   
 <script setup lang="ts">
@@ -44,3 +43,21 @@ async function handleSubmit() {
     }
 }
 </script>
+  
+<style scoped>
+.container-with-border {
+    border: 2px solid #0b0a70;
+    /* 设置外框颜色和宽度 */
+    padding: 20px;
+    /* 可选：增加内边距 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.responsive-card {
+    width: 50vw;
+    max-width: 600px;
+    min-width: 300px;
+}
+</style>

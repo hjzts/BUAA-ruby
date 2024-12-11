@@ -16,7 +16,11 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         async login(form: LoginForm) {
             try {
-                const response = await api.post<AuthResponse>('/login', form)
+                const payload = {
+                    "user":form
+                }
+                const response = await api.post<AuthResponse>('/login', payload)
+
                 const token = response.headers.authorization
                 this.token = token
                 this.user = response.data.data
@@ -30,7 +34,11 @@ export const useAuthStore = defineStore('auth', {
 
         async register(form: RegisterForm) {
             try {
-                const response = await api.post<AuthResponse>('/signup', form)
+                const payload = {
+                    "user": form
+                }
+                const response = await api.post<AuthResponse>('/signup', payload)
+
                 const token = response.headers.authorization
                 this.token = token
                 this.user = response.data.data

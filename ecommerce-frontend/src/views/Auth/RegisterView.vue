@@ -1,139 +1,169 @@
-<!-- src/views/RegisterView.vue -->
 <template>
-    <v-container>
-        <v-row justify="center">
-            <v-col cols="12" sm="8" md="6">
-                <v-card>
-                    <v-card-title class="text-center text-h5 pt-4">
-                        Create Account
-                    </v-card-title>
+    <v-app>
+        <v-container fluid class="d-flex justify-center align-center fill-height">
+            <v-row justify="center" align="center" class="fill-width">
+                <v-col cols="12" sm="8" md="6" lg="4">
+                    <v-card class="elevation-12" color="blue-grey lighten-5" outlined>
+                        <v-card-title class="text-center text-h4 font-weight-bold py-8 text-primary">
+                            Create Your Account
+                        </v-card-title>
 
-                    <v-card-text>
-                        <v-form @submit.prevent="handleSubmit" ref="form">
-                            <!-- Username field -->
-                            <v-text-field v-model="form.username" label="Username" :rules="[rules.required, rules.username]"
-                                placeholder="Enter your username" prepend-inner-icon="mdi-account" variant="outlined"
-                                :loading="loading" :disabled="loading" />
+                        <v-card-text>
+                            <v-form @submit.prevent="handleSubmit" ref="form">
+                                <!-- Username field -->
+                                <v-text-field v-model="formData.username" :rules="[rules.required, rules.minLength(3)]"
+                                    label="Username" prepend-inner-icon="mdi-account" variant="outlined" class="mb-4" />
 
-                            <!-- Email field -->
-                            <v-text-field v-model="form.email" label="Email" type="email"
-                                :rules="[rules.required, rules.email]" placeholder="Enter your email"
-                                prepend-inner-icon="mdi-email" variant="outlined" :loading="loading" :disabled="loading" />
+                                <!-- Email field -->
+                                <v-text-field v-model="formData.email" :rules="[rules.required, rules.email]"
+                                    label="Email" prepend-inner-icon="mdi-email" variant="outlined" class="mb-4" />
 
-                            <!-- Password field -->
-                            <v-text-field v-model="form.password" label="Password"
-                                :type="showPassword ? 'text' : 'password'" :rules="[rules.required, rules.password]"
-                                placeholder="Enter your password" prepend-inner-icon="mdi-lock"
-                                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                @click:append-inner="showPassword = !showPassword" variant="outlined" :loading="loading"
-                                :disabled="loading" />
+                                <!-- Password field -->
+                                <v-text-field v-model="formData.password" :rules="[rules.required, rules.password]"
+                                    :type="showPassword ? 'text' : 'password'" label="Password"
+                                    prepend-inner-icon="mdi-lock"
+                                    :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" variant="outlined"
+                                    class="mb-4" @click:append-inner="showPassword = !showPassword" />
 
-                            <!-- Password confirmation field -->
-                            <v-text-field v-model="form.password_confirmation" label="Confirm Password"
-                                :type="showPassword ? 'text' : 'password'" :rules="[rules.required, rules.passwordMatch]"
-                                placeholder="Confirm your password" prepend-inner-icon="mdi-lock-check"
-                                :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                @click:append-inner="showPassword = !showPassword" variant="outlined" :loading="loading"
-                                :disabled="loading" />
+                                <!-- Password confirmation field -->
+                                <v-text-field v-model="formData.password_confirmation"
+                                    :rules="[rules.required, rules.passwordMatch]"
+                                    :type="showPasswordConfirm ? 'text' : 'password'" label="Confirm Password"
+                                    prepend-inner-icon="mdi-lock-check"
+                                    :append-inner-icon="showPasswordConfirm ? 'mdi-eye-off' : 'mdi-eye'"
+                                    variant="outlined" class="mb-6"
+                                    @click:append-inner="showPasswordConfirm = !showPasswordConfirm" />
 
-                            <!-- Error alert -->
-                            <v-alert v-if="error" type="error" variant="tonal" class="mb-4" closable
-                                @click:close="error = ''">
-                                {{ error }}
-                            </v-alert>
-
-                            <!-- Submit button -->
-                            <v-btn type="submit" color="primary" block size="large" :loading="loading" :disabled="loading">
-                                Register
-                            </v-btn>
+                                <!-- Submit button -->
+                                <v-btn type="submit" color="primary" size="large" block rounded elevation="2"
+                                    :loading="loading" :disabled="loading">
+                                    Register
+                                </v-btn>
+                            </v-form>
 
                             <!-- Login link -->
-                            <v-row class="mt-4">
-                                <v-col class="text-center">
-                                    Already have an account?
-                                    <router-link to="/login" class="text-decoration-none">
-                                        Login here
-                                    </router-link>
-                                </v-col>
-                            </v-row>
-                        </v-form>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
-    </v-container>
+                            <div class="text-center mt-6">
+                                <span class="grey--text text--darken-1">Already have an account?</span>
+                                <router-link to="/login" class="text-primary font-weight-medium text-decoration-none">
+                                    Sign in
+                                </router-link>
+                            </div>
+                        </v-card-text>
+                    </v-card>
+
+                    <!-- Snackbar for messages -->
+                    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" rounded>
+                        {{ snackbar.text }}
+                        <template v-slot:actions>
+                            <v-btn color="white" variant="text" @click="snackbar.show = false">
+                                Close
+                            </v-btn>
+                        </template>
+                    </v-snackbar>
+                </v-col>
+            </v-row>
+        </v-container>
+    </v-app>
 </template>
   
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import type { RegisterForm } from '@/types/auth'
+import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import type { RegisterForm } from '@/types/auth';
 
-const router = useRouter()
-const authStore = useAuthStore()
-const form = ref<RegisterForm>({
+const router = useRouter();
+const authStore = useAuthStore();
+const form = ref<HTMLFormElement | null>(null);
+const loading = ref(false);
+const showPassword = ref(false);
+const showPasswordConfirm = ref(false);
+
+// Form data
+const formData = reactive<RegisterForm>({
     username: '',
     email: '',
     password: '',
     password_confirmation: ''
-})
-
-const loading = ref(false)
-const error = ref('')
-const showPassword = ref(false)
-const formRef = ref()
+});
 
 // Validation rules
 const rules = {
     required: (v: string) => !!v || 'This field is required',
-    email: (v: string) => {
-        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        return pattern.test(v) || 'Invalid email format'
-    },
-    username: (v: string) => {
-        if (v.length < 3) return 'Username must be at least 3 characters'
-        if (v.length > 20) return 'Username must be less than 20 characters'
-        return true
-    },
-    password: (v: string) => {
-        if (v.length < 8) return 'Password must be at least 8 characters'
-        if (!/\d/.test(v)) return 'Password must contain at least one number'
-        if (!/[a-z]/.test(v)) return 'Password must contain at least one lowercase letter'
-        if (!/[A-Z]/.test(v)) return 'Password must contain at least one uppercase letter'
-        return true
-    },
-    passwordMatch: (v: string) => {
-        return v === form.value.password || 'Passwords do not match'
+    minLength: (min: number) => (v: string) =>
+        !v || v.length >= min || `Min ${min} characters`,
+    email: (v: string) =>
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || 'Please enter a valid email',
+    password: (v: string) =>
+        /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(v) ||
+        'Password must be at least 8 characters with letters and numbers',
+    passwordMatch: (v: string) =>
+        v === formData.password || 'Passwords must match'
+};
+
+// Snackbar state
+const snackbar = reactive({
+    show: false,
+    color: 'success',
+    text: ''
+});
+
+// Show snackbar message
+const showMessage = (text: string, color: 'success' | 'error' = 'success') => {
+    snackbar.text = text;
+    snackbar.color = color;
+    snackbar.show = true;
+};
+
+// Handle form submission
+const handleSubmit = async () => {
+    const { valid } = (await form.value?.validate()) || { valid: false };
+
+    if (!valid) {
+        showMessage('Please fix the form errors', 'error');
+        return;
     }
-}
 
-async function handleSubmit() {
-    error.value = ''
-
-    // Form validation
-    const { valid } = await formRef.value.validate()
-    if (!valid) return
-
-    loading.value = true
-
+    loading.value = true;
     try {
-        await authStore.register(form.value)
-        router.push('/dashboard')
-    } catch (err: any) {
-        error.value = err.response?.data?.status?.message || 'Registration failed. Please try again.'
+        await authStore.register(formData);
+        showMessage('Registration successful!');
+        router.push('/home');
+    } catch (error: any) {
+        showMessage(
+            error.response?.data?.status?.message || 'Registration failed',
+            'error'
+        );
     } finally {
-        loading.value = false
+        loading.value = false;
     }
-}
+};
 </script>
   
 <style scoped>
+.fill-height {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #e3f2fd, #f0f4c3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .v-card {
-    border-radius: 8px;
+    border-radius: 16px;
 }
 
 .v-card-title {
-    margin-bottom: 16px;
+    letter-spacing: 1px;
+}
+
+.v-btn {
+    text-transform: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.text-decoration-none {
+    text-decoration: none;
 }
 </style>
