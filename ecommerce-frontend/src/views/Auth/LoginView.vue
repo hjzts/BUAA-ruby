@@ -81,7 +81,7 @@ const handleSubmit = async () => {
         await authStore.login(formData)
         showMessage('Login successful!')
         router.push('/home')
-    } catch (error: never) {
+    } catch (error: any) {
         showMessage(
             error.response?.data?.status?.message || 'Login failed',
             'error'

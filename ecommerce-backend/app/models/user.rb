@@ -7,6 +7,12 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
 
+  has_one_attached :avatar
+
   validates :username, presence: true
   validates :role, inclusion: { in: %w[admin buyer] }
+
+  def avatar_url
+    Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
+  end
 end

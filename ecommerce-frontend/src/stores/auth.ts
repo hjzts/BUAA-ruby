@@ -37,6 +37,7 @@ export const useAuthStore = defineStore('auth', {
                 const payload = {
                     "user": form
                 }
+                console.log(payload)
                 const response = await api.post<AuthResponse>('/signup', payload)
 
                 const token = response.headers.authorization
