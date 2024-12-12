@@ -1,12 +1,12 @@
 Rails.application.routes.draw do
-  devise_for :users, path: '', path_names: {
-    sign_in: 'login',
-    sign_out: 'logout',
-    registration: 'signup'
+  devise_for :users, path: "", path_names: {
+    sign_in: "login",
+    sign_out: "logout",
+    registration: "signup"
   },
   controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
+    sessions: "users/sessions",
+    registrations: "users/registrations"
   }
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -21,6 +21,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       resource :profile, only: [:show, :update]
       resource :password, only: [:update]
+      resources :products do
+        memeber do
+          post :manage_stock
+        end
+      end
     end
   end
 end

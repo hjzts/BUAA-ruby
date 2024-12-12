@@ -15,6 +15,9 @@ import '@mdi/font/css/materialdesignicons.css'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
+// mdi-font
+import '@mdi/font/css/materialdesignicons.css'
+
 const vuetify = createVuetify({
     components,
     directives,
