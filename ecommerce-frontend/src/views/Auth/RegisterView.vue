@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-container fluid class="d-flex justify-center align-center fill-height">
+        <v-container fluid class="d-flex flex-column justify-center align-center fill-height">
             <v-card class="elevation-12" color="blue-grey lighten-5" outlined>
                 <v-card-title class="text-center text-h4 font-weight-bold py-8 text-primary">
                     Create Your Account
@@ -75,6 +75,7 @@ const form = ref<HTMLFormElement | null>(null);
 const loading = ref(false);
 const showPassword = ref(false);
 const showPasswordConfirm = ref(false);
+// const backgroundImage = ref('../../assets/background.jpg'); 
 
 // Form data
 const formData = reactive<RegisterForm>({
@@ -136,18 +137,28 @@ const handleSubmit = async () => {
     }
 };
 </script>
-  
+
 <style scoped>
+html,
+body,
+#app {
+    height: 100%; /* 确保根元素和 body 占满视口 */
+    margin: 0;
+}
 .fill-height {
     min-height: 100vh;
     background: linear-gradient(to bottom, #e3f2fd, #f0f4c3);
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
 }
 
 .v-card {
+    width: 100%;
+    max-width: 400px; /* 确保表单卡片在大屏幕上不会过大 */
     border-radius: 16px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* 添加阴影提升视觉层次 */
 }
 
 .v-card-title {
