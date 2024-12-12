@@ -1,6 +1,45 @@
 <template>
-  <div class="centered-text">
-  </div>
+  <v-container fluid class="d-flex justify-center align-center" style="min-height: 100vh; background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);">
+    <v-card class="elevation-12" style="border-radius: 16px; overflow: hidden;">
+      <v-card-title class="text-center text-h5 font-weight-bold pt-8">
+        Login
+      </v-card-title>
+
+      <v-card-text>
+        <v-form @submit.prevent="handleSubmit" ref="form">
+          <!-- Email field -->
+          <v-text-field v-model="formData.email" label="Email" prepend-inner-icon="mdi-email" variant="outlined" class="mb-3" required />
+
+          <!-- Password field -->
+          <v-text-field v-model="formData.password" :type="showPassword ? 'text' : 'password'" label="Password" prepend-inner-icon="mdi-lock" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" variant="outlined" class="mb-6" @click:append-inner="showPassword = !showPassword" required />
+
+          <!-- Submit button -->
+          <v-btn type="submit" color="primary" size="large" block :loading="loading" :disabled="loading">
+            Login
+          </v-btn>
+        </v-form>
+
+        <!-- Register link -->
+        <div class="text-center mt-6">
+          Don’t have an account yet?
+          <router-link to="/register" class="text-decoration-none">
+            Create Account
+          </router-link>
+        </div>
+      </v-card-text>
+    </v-card>
+
+    <!-- Snackbar for messages -->
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
+      {{ snackbar.text }}
+      <template v-slot:actions>
+        <v-btn color="white" variant="text" @click="snackbar.show = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
+  </v-container>
 </template>
 
 <script setup lang="ts">
