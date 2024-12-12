@@ -1,43 +1,73 @@
 <template>
-    <div class="authentication">
-        <v-container fluid class="pa-3">
-            <v-row class="h-100vh d-flex justify-center align-center">
-                <v-col cols="12" class="d-flex align-center">
-                    <div class="boxed-auth-wrap">
-                        <v-card rounded="xl" elevation="10" class="px-sm-1 px-0  mx-auto index-2" max-width="450">
-                            <v-card-item class="pa-sm-8">
-                                <div class="d-flex justify-center mb-5">
-                                    <Logo />
-                                </div>
-                                <div class="d-flex align-center text-center mb-6">
-                                    <div class="text-h6 w-100 px-5 font-weight-regular auth-divider position-relative">
-                                        <span
-                                            class="bg-surface px-5 py-3 position-relative text-subtitle-1 text-grey100">Your
-                                            Social Campaigns</span>
-                                    </div>
-                                </div>
-                                <RegisterForm />
-                                <h6 class="text-subtitle-1  text-grey100 d-flex justify-center align-center mt-3">
-                                    Already have an Account?
-                                    <v-btn variant="plain" to="/auth/login"
-                                        class="text-primary text-body-1 opacity-1 font-weight-medium pl-2">Sign In</v-btn>
-                                </h6>
-                            </v-card-item>
-                        </v-card>
+    <v-app>
+        <v-container fluid class="d-flex justify-center align-center fill-height">
+            <v-card class="elevation-12" color="blue-grey lighten-5" outlined>
+                <v-card-title class="text-center text-h4 font-weight-bold py-8 text-primary">
+                    Create Your Account
+                </v-card-title>
+
+                <v-card-text>
+                    <v-form @submit.prevent="handleSubmit" ref="form">
+                        <!-- Username field -->
+                        <v-text-field v-model="formData.username" :rules="[rules.required, rules.minLength(3)]"
+                            label="Username" prepend-inner-icon="mdi-account" variant="outlined" class="mb-4" />
+
+                        <!-- Email field -->
+                        <v-text-field v-model="formData.email" :rules="[rules.required, rules.email]"
+                            label="Email" prepend-inner-icon="mdi-email" variant="outlined" class="mb-4" />
+
+                        <!-- Password field -->
+                        <v-text-field v-model="formData.password" :rules="[rules.required, rules.password]"
+                            :type="showPassword ? 'text' : 'password'" label="Password"
+                            prepend-inner-icon="mdi-lock"
+                            :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" variant="outlined"
+                            class="mb-4" @click:append-inner="showPassword = !showPassword" />
+
+                        <!-- Password confirmation field -->
+                        <v-text-field v-model="formData.password_confirmation"
+                            :rules="[rules.required, rules.passwordMatch]"
+                            :type="showPasswordConfirm ? 'text' : 'password'" label="Confirm Password"
+                            prepend-inner-icon="mdi-lock-check"
+                            :append-inner-icon="showPasswordConfirm ? 'mdi-eye-off' : 'mdi-eye'"
+                            variant="outlined" class="mb-6"
+                            @click:append-inner="showPasswordConfirm = !showPasswordConfirm" />
+
+                        <!-- Submit button -->
+                        <v-btn type="submit" color="primary" size="large" block rounded elevation="2"
+                            :loading="loading" :disabled="loading">
+                            Register
+                        </v-btn>
+                    </v-form>
+
+                    <!-- Login link -->
+                    <div class="text-center mt-6">
+                        <span class="grey--text text--darken-1">Already have an account?</span>
+                        <router-link to="/login" class="text-primary font-weight-medium text-decoration-none">
+                            Sign in
+                        </router-link>
                     </div>
-                </v-col>
-            </v-row>
+                </v-card-text>
+            </v-card>
+
+            <!-- Snackbar for messages -->
+            <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" rounded>
+                {{ snackbar.text }}
+                <template v-slot:actions>
+                    <v-btn color="white" variant="text" @click="snackbar.show = false">
+                        Close
+                    </v-btn>
+                </template>
+            </v-snackbar>
+
         </v-container>
-    </div>
+    </v-app>
 </template>
   
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import Logo  from '@/layouts/full/logo/logo.vue';
-import RegisterForm from '@/components/auth/RegisterForm.vue';
-// import type { RegisterForm } from '@/types/auth';
+import type { RegisterForm } from '@/types/auth';
 
 const router = useRouter();
 const authStore = useAuthStore();
