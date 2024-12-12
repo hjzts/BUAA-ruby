@@ -1,57 +1,38 @@
 <template>
-    <v-app>
-        <v-container fluid class="d-flex justify-center align-center" style="min-height: 100vh; background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);">
-            <v-row justify="center" align="center">
-                <v-col cols="12" sm="8" md="6" lg="4">
-                    <v-card class="elevation-12" style="border-radius: 16px; overflow: hidden;">
-                        <v-card-title class="text-center text-h5 font-weight-bold pt-8">
-                            Login
-                        </v-card-title>
-
-                        <v-card-text>
-                            <v-form @submit.prevent="handleSubmit" ref="form">
-                                <!-- Email field -->
-                                <v-text-field v-model="formData.email" label="Email" prepend-inner-icon="mdi-email" variant="outlined" class="mb-3" required />
-
-                                <!-- Password field -->
-                                <v-text-field v-model="formData.password" :type="showPassword ? 'text' : 'password'" label="Password" prepend-inner-icon="mdi-lock" :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'" variant="outlined" class="mb-6" @click:append-inner="showPassword = !showPassword" required />
-
-                                <!-- Submit button -->
-                                <v-btn type="submit" color="primary" size="large" block :loading="loading" :disabled="loading">
-                                    Login
-                                </v-btn>
-                            </v-form>
-
-                            <!-- Register link -->
-                            <div class="text-center mt-6">
-                                Don’t have an account yet?
-                                <router-link to="/register" class="text-decoration-none">
-                                    Create Account
-                                </router-link>
-                            </div>
-                        </v-card-text>
-                    </v-card>
-
-                    <!-- Snackbar for messages -->
-                    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
-                        {{ snackbar.text }}
-                        <template v-slot:actions>
-                            <v-btn color="white" variant="text" @click="snackbar.show = false">
-                                Close
-                            </v-btn>
-                        </template>
-                    </v-snackbar>
+    <div class="authentication">
+        <v-container fluid class="pa-3">
+            <v-row class="h-100vh d-flex justify-center align-center">
+                <v-col cols="12" class="d-flex align-center">
+                    <div class="boxed-auth-wrap">
+                        <v-card rounded="xl" elevation="10" class="px-sm-1 px-0  mx-auto index-2" max-width="450">
+                            <v-card-item class="pa-sm-8">
+                                <div class="d-flex justify-center mb-5">
+                                    <Logo />
+                                </div>
+                                <!-- <div class="text-h6 text-medium-emphasis text-center mb-6">Your Social Campaigns</div> -->
+                                <LoginForm />
+                                <h6 class="text-subtitle-1  text-grey100 d-flex justify-center align-center mt-3">
+                                    New to Hugo 交易所?
+                                    <v-btn class="pl-0 text-primary text-body-1 font-weight-medium  opacity-1 pl-2" height="auto"
+                                        to="/auth/register" variant="plain">Create an account</v-btn>
+                                </h6>
+                            </v-card-item>
+                        </v-card>
+                    </div>
                 </v-col>
             </v-row>
+
         </v-container>
-    </v-app>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import type { LoginForm } from '@/types/auth'
+import Logo from '@/layouts/full/logo/logo.vue'
+import LoginForm from '@/components/auth/LoginForm.vue'
+// import type { LoginForm } from '@/types/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -104,6 +85,12 @@ const handleSubmit = async () => {
 
 .v-card-title {
     letter-spacing: 0.5px;
+}
+
+.fill-height {
+  height: 100vh;
+  padding: 0;
+  margin: 0;
 }
 
 .v-btn {
