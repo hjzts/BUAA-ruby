@@ -39,8 +39,8 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/products',
-      name: 'products',
+      path: '/only-products',
+      name: 'only-products',
       component: () => import('../views/ProductsGrid.vue')
     },
     {
@@ -48,6 +48,16 @@ const router = createRouter({
       name: 'admin-products',
       component: () => import('../views/admin/ProductList.vue')
       // meta: { requiresAdmin: true }
+    },
+    {
+      path: '/products',
+      name: 'products',
+      component: () => import('../views/products/ProductList.vue')
+    },
+    {
+      path: '/products/:id',
+      name: 'product-detail',
+      component: () => import('../views/products/ProductDetail.vue')
     }
   ],
 })
