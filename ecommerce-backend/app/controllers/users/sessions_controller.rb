@@ -27,7 +27,8 @@ class Users::SessionsController < Devise::SessionsController
       render json: {
         status: {
           code: 200,
-          message: "Switched user from #{old_user_email} to #{resource.email}."
+          message: "Switched user from #{old_user_email} to #{resource.email}.",
+          token: token
         },
         data: UserSerializer.new(resource).serializable_hash[:data][:attributes]
       },status: :ok
@@ -41,7 +42,8 @@ class Users::SessionsController < Devise::SessionsController
       render json: {
         status: {
           code: 200,
-          message: "Logged in successfully."
+          message: "Logged in successfully.",
+          token: tokenz
         },
         data: UserSerializer.new(resource).serializable_hash[:data][:attributes]
       },status: :ok
@@ -61,9 +63,9 @@ class Users::SessionsController < Devise::SessionsController
   # end
 
   # DELETE /resource/sign_out
-  def destroy
-    super
-  end
+  # def destroy
+  #   super
+  # end
 
 
   private
@@ -84,6 +86,8 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def respond_to_on_destroy
+    Rails.logger.info("respond_to_on_destroy")
+
     if request.headers["Authorization"].present?
       jwt_payload = JWT.decode(request.headers["Authorization"].split.last,
                                Rails.application.credentials.devise_jwt_secret_key!).first
@@ -115,8 +119,8 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def generate_jwt_token(user)
-    token = user.generate_jwt
-    response.headers["Authorization"] = "Bearer #{token}"
-    token
+    @token = request.env["warden-jwt_auth.token"]
+    response.headers["Authorization"] = "Bearer #{@token}"
+    @token
   end
 end

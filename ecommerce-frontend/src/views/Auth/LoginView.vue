@@ -78,6 +78,7 @@ const showMessage = (text: string, color: 'success' | 'error' = 'success') => {
 const handleSubmit = async () => {
     loading.value = true
     try {
+        console.log("formData: ", formData)
         await authStore.login(formData)
         showMessage('Login successful!')
         router.push('/home')

@@ -35,7 +35,7 @@
             v-bind="props"
           >
             <v-avatar color="white" size="35">
-              <v-img v-if="authStore.user?.avatar_url" :src="authStore.user.avatar_url" />
+              <v-img v-if="authStore.user?.avatar_url" :src="authStore.user.avatar_url || '/avatar.jpg'" />
               <v-icon v-else color="primary">mdi-account</v-icon>
             </v-avatar>
           </v-btn>
@@ -71,7 +71,7 @@ const router = useRouter()
 const handleLogout = async () => {
   try {
     await authStore.logout()
-    router.push('/login')
+    await router.push('/login')
   } catch (error) {
     console.error('Logout failed:', error)
   }

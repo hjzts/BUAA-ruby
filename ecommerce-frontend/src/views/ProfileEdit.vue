@@ -21,7 +21,7 @@
               />
 
               <v-text-field
-                v-model="form.phone"
+                v-model="form.phone_number"
                 label="Phone"
                 :rules="[v => !v || /^\d{10,11}$/.test(v) || 'Invalid phone number']"
               />

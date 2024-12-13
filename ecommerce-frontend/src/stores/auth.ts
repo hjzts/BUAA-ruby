@@ -19,12 +19,14 @@ export const useAuthStore = defineStore('auth', {
                 const payload = {
                     "user":form
                 }
+                console.log("payload: ",payload)
                 const response = await api.post<AuthResponse>('/login', payload)
 
                 const token = response.headers.authorization
                 this.token = token
                 this.user = response.data.data
                 localStorage.setItem('token', token)
+                console.log(token)
                 return response.data
             } catch (error) {
                 console.error('Login failed:', error)
