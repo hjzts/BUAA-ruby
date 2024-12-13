@@ -1,8 +1,7 @@
-<!-- src/views/ProductsGrid.vue -->
 <template>
   <v-container>
-    <!-- 过滤器部分 -->
     <v-row>
+      <!-- 过滤器部分 -->
       <v-col cols="12" md="3">
         <v-card class="mb-4">
           <v-card-title>Filters</v-card-title>
@@ -45,8 +44,10 @@
 
       <!-- 产品网格 -->
       <v-col cols="12" md="9">
+        aaaaaaa
         <v-row>
           <template v-if="!loading && products.length">
+            product.length={{products.length}}
             <v-col
               v-for="product in products"
               :key="product.id"
@@ -54,13 +55,14 @@
               sm="6"
               md="4"
             >
+              aaaa
               <v-card
                 :loading="loading"
                 class="mx-auto product-card"
                 @click="navigateToProduct(product.id)"
               >
                 <v-img
-                  :src="product.image_url || '/placeholder.png'"
+                  :src="product.image_url || '../assets/placeholder.png'"
                   height="200"
                   cover
                   class="align-end"
@@ -76,9 +78,12 @@
 
                 <v-card-title>{{ product.product_name }}</v-card-title>
 
-                <v-card-text>
-                  <div class="text-subtitle-1 mb-1">${{ product.price.toFixed(2) }}</div>
-                  <div class="text-body-2">{{ truncateText(product.description, 100) }}</div>
+                <v-card-text class="text-body-2">
+                  {{ truncateText(product.description, 100) }}
+                </v-card-text>
+
+                <v-card-text class="text-subtitle-1 mb-1">
+                  ${{ product.price }}
                 </v-card-text>
 
                 <v-card-actions>
@@ -137,10 +142,12 @@ const page = ref(1)
 const totalPages = ref(1)
 const filters = ref({
   search: '',
-  available: false,
-  min_price: 0,
-  max_price: 1000
+  available: false as boolean,
+  min_price: 0 as number,
+  max_price: 1000 as number
 })
+
+const error = ref<string | null>(null)
 
 const priceRange = computed({
   get: () => [filters.value.min_price, filters.value.max_price],
@@ -151,14 +158,45 @@ const priceRange = computed({
 
 const fetchProducts = async () => {
   loading.value = true
+  error.value = null
   try {
     const response = await productService.getProducts({
       page: page.value,
       ...filters.value
     })
-    products.value = response.products
+
+    // console.log('Complete Response:', response)
+    //
+    // if (response.products) {
+    //   console.log('========= Products Details =========')
+    //   for (const product of response.products) {
+    //     console.log('Product ID:', product.id)
+    //     console.log('Product Attributes:')
+    //     for (const [key, value] of Object.entries(product.attributes)) {
+    //       console.log(`${key}:`, value)
+    //     }
+    //     console.log('----------------------------------')
+    //   }
+    // }
+    //
+    // console.log("API Response: ", products.value)
+    // products.value = response.products
+    products.value = response.products.map(item => ({
+      id: Number(item.id),
+      ...item.attributes
+    }))
+    // console.log("products.value: ", products.value)
     totalPages.value = response.meta.total_pages
-  } catch (error) {
+    // for(const product of products.value) {
+    //   console.log("Product ID: ", product.id)
+    //   console.log("Product Name: ", product.product_name)
+    //   console.log("Product Price: ", product.price)
+    //   console.log("Product Description: ", product.description)
+    //   console.log("Product Image URL: ", product.image_url)
+    //   console.log("Product In Stock: ", product.in_stock)
+    // }
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Failed to fetch products'
     console.error('Failed to fetch products:', error)
   } finally {
     loading.value = false

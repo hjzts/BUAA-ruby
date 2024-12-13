@@ -21,6 +21,23 @@ interface ProductFilters {
   per_page?: number
 }
 
+interface ProductResponse {
+  data: Array<{
+    id: string
+    type: string
+    attributes: Product
+  }>
+}
+
+interface ProductsResponse {
+  products: ProductResponse
+  meta: {
+    total_pages: number
+    current_page: number
+    total_count: number
+  }
+}
+
 export const productService = {
   async getProducts(filters: ProductFilters = {}) {
     const response = await api.get<{
@@ -31,6 +48,8 @@ export const productService = {
         total_count: number
       }
     }>('/api/v1/products', { params: filters })
+    console.log(response)
+    console.log(response.data)
     return response.data
   },
 
