@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_13_184551) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_13_192347) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -37,6 +37,25 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_13_184551) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "designs", force: :cascade do |t|
+    t.integer "sales", default: 0
+    t.string "design_number", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["design_number"], name: "index_designs_on_design_number", unique: true
+  end
+
+  create_table "product_designs", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.integer "design_id", null: false
+    t.decimal "price_adjustment", precision: 10, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["design_id"], name: "index_product_designs_on_design_id"
+    t.index ["product_id", "design_id"], name: "index_product_designs_on_product_id_and_design_id", unique: true
+    t.index ["product_id"], name: "index_product_designs_on_product_id"
   end
 
   create_table "product_sizes", force: :cascade do |t|
@@ -93,6 +112,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_13_184551) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "product_designs", "designs"
+  add_foreign_key "product_designs", "products"
   add_foreign_key "product_sizes", "products"
   add_foreign_key "product_sizes", "sizes"
 end
