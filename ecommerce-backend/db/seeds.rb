@@ -48,9 +48,9 @@ admin_data = {
   email: "admin@example.com",
   password: "password123",
   role: "admin",
-  phone: "13800138000",
-  address: "123 Admin Street",
-  bio: "System administrator"
+  phone_number: "13800138000",
+  address: "123 Admin Street"
+  # bio: "System administrator"
 }
 
 if User.find_by(email: admin_data[:email])
@@ -67,9 +67,9 @@ end
     email: "user#{i+1}@example.com",
     password: "password123",
     role: "buyer",
-    phone: "1380013#{format('%04d', i+1)}",
-    address: "#{i+1} User Street, City",
-    bio: "Regular user #{i+1}"
+    phone_number: "1380013#{format('%04d', i+1)}",
+    address: "#{i+1} User Street, City"
+    # bio: "Regular user #{i+1}"
   }
 
   if User.find_by(email: user_data[:email])
@@ -80,10 +80,8 @@ end
   end
 end
 
-# 创建商品
-puts "Creating products..."
 
-# 电子产品类
+# 产品数据
 electronic_products = [
   {
     product_name: "MacBook Pro 14-inch",
@@ -97,7 +95,7 @@ electronic_products = [
     product_name: "iPhone 14 Pro",
     description: "A16 Bionic chip, 256GB Storage, Dynamic Island, Deep Purple",
     price: 1099.99,
-    stock_quantity: 0, # 缺货
+    stock_quantity: 0,
     sales_count: 500,
     status: "active"
   },
@@ -111,7 +109,6 @@ electronic_products = [
   }
 ]
 
-# 服装类
 clothing_products = [
   {
     product_name: "Nike Air Max 270",
@@ -133,13 +130,12 @@ clothing_products = [
     product_name: "Champion Hoodie",
     description: "Classic Pullover Hoodie, Gray",
     price: 45.00,
-    stock_quantity: 0, # 缺货
+    stock_quantity: 0,
     sales_count: 250,
     status: "inactive"
   }
 ]
 
-# 家居类
 home_products = [
   {
     product_name: "Philips Hue Starter Kit",
@@ -171,20 +167,41 @@ home_products = [
 all_products = electronic_products + clothing_products + home_products
 
 all_products.each do |product_data|
-  product = Product.create!(product_data)
-  puts "Created product: #{product.product_name}"
+  existing_product = Product.find_by(product_name: product_data[:product_name])
   
-  # 为每个产品添加示例图片
-  # 注意：需要在项目的 lib/assets/seed_images 目录下放置相应的图片
-  if File.exist?(Rails.root.join("lib", "assets", "seed_images", "#{product.product_name.parameterize}.jpg"))
-    product.image.attach(
-      io: File.open(Rails.root.join("lib", "assets", "seed_images", "#{product.product_name.parameterize}.jpg")),
-      filename: "#{product.product_name.parameterize}.jpg",
-      content_type: "image/jpeg"
-    )
+  if existing_product
+    puts "Product '#{product_data[:product_name]}' already exists, skipping..."
+    next
+  end
+
+  # 开启事务以确保数据完整性
+  Product.transaction do
+    product = Product.create!(product_data)
+    puts "Created product: #{product.product_name}"
+    
+    # 为产品添加示例图片
+    image_path = Rails.root.join("lib", "assets", "seed_images", "#{product.product_name.parameterize}.jpg")
+    if File.exist?(image_path)
+      unless product.image.attached?
+        product.image.attach(
+          io: File.open(image_path),
+          filename: "#{product.product_name.parameterize}.jpg",
+          content_type: "image/jpeg"
+        )
+        puts "Attached image for: #{product.product_name}"
+      end
+    else
+      puts "No image found for: #{product.product_name}"
+    end
   end
 end
 
-puts "Seeding completed! Created:"
-puts "- #{User.count} users (including 1 admin)"
-puts "- #{Product.count} products"
+# 输出统计信息
+puts "\nSeeding completed!"
+puts "Current database status:"
+puts "- #{User.count} total users"
+puts "- #{User.where(role: 'admin').count} admins"
+puts "- #{User.where(role: 'buyer').count} buyers"
+puts "- #{Product.count} total products"
+puts "- #{Product.where(status: 'active').count} active products"
+puts "- #{Product.where(stock_quantity: 0).count} out-of-stock products"

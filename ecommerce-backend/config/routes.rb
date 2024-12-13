@@ -22,7 +22,7 @@ Rails.application.routes.draw do
       resource :profile, only: [:show, :update]
       resource :password, only: [:update]
       resources :products do
-        memeber do
+        member do
           post :manage_stock
         end
       end

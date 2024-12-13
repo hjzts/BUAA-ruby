@@ -3,7 +3,7 @@ class Product < ApplicationRecord
   has_one_attached :image
   
   # 定义status的可选值
-  enum status: {
+  enum :status, {
     active: "active",   # 正常销售
     inactive: "inactive", # 下架
     deleted: "deleted" # 删除
@@ -22,7 +22,7 @@ class Product < ApplicationRecord
   # 常用查询范围
   scope :available, -> { where(status: "active").where("stock_quantity > 0") }
   scope :out_of_stock, -> { where(status: "active").where("stock_quantity = 0") }
-  scope :price_between, ->(min, max) {where(price: min..max)}
+  scope :price_between, ->(min, max) { where(price: min..max) }
 
   # 获取图片URL
   def image_url
