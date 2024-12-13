@@ -25,9 +25,11 @@ Rails.application.routes.draw do
       resource :password, only: [:update]
       resources :sizes
       resources :designs
+      resources :colors
       resources :products do
         resources :product_sizes, path: "sizes"
         resources :product_designs, path: "designs"
+        resources :product_colors, path: "colors"
         member do
           post :manage_stock
         end

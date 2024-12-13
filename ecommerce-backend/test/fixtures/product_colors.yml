@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  color: one
+  price_adjustment: 9.99
+
+two:
+  product: two
+  color: two
+  price_adjustment: 9.99

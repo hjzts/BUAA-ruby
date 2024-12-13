@@ -6,6 +6,8 @@ class Product < ApplicationRecord
   has_many :sizes, through: :product_sizes
   has_many :product_designs, dependent: :destroy
   has_many :designs, through: :product_designs
+  has_many :product_colors, dependent: :destroy
+  has_many :colors, through: :product_colors
   
   # 定义status的可选值
   enum :status, {

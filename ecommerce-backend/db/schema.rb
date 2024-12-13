@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_13_192347) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_13_193405) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,12 +39,31 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_13_192347) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "colors", force: :cascade do |t|
+    t.string "rgb", null: false
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["rgb"], name: "index_colors_on_rgb", unique: true
+  end
+
   create_table "designs", force: :cascade do |t|
     t.integer "sales", default: 0
     t.string "design_number", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["design_number"], name: "index_designs_on_design_number", unique: true
+  end
+
+  create_table "product_colors", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.integer "color_id", null: false
+    t.decimal "price_adjustment", precision: 10, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["color_id"], name: "index_product_colors_on_color_id"
+    t.index ["product_id", "color_id"], name: "index_product_colors_on_product_id_and_color_id", unique: true
+    t.index ["product_id"], name: "index_product_colors_on_product_id"
   end
 
   create_table "product_designs", force: :cascade do |t|
@@ -112,6 +131,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_13_192347) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "product_colors", "colors"
+  add_foreign_key "product_colors", "products"
   add_foreign_key "product_designs", "designs"
   add_foreign_key "product_designs", "products"
   add_foreign_key "product_sizes", "products"
