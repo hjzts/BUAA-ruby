@@ -44,6 +44,7 @@ puts "Starting seeding process..."
 
 
 # test1 1@test.com  test1111 test1111
+# test2 2@test.com  test2222 test2222
 # 创建管理员用户
 admin_data = {
   username: "admin",

@@ -70,7 +70,7 @@
           </template>
 
           <template #[`item.price`]="{ item }">
-            ${{ item.price.toFixed(2) }}
+            ${{ item.price }}
           </template>
 
           <template #[`item.status`]="{ item }">
@@ -225,7 +225,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { productService, type Product } from '@/utils/product'
 import debounce from 'lodash/debounce'
 
@@ -241,9 +241,9 @@ const page = ref(1)
 const totalPages = ref(1)
 const filters = ref({
   search: '',
-  available: null as boolean | null,
-  min_price: 0,
-  max_price: 1000
+  available: false as boolean,
+  min_price: 0 as number,
+  max_price: 1000 as number
 })
 
 // 计算属性
@@ -282,7 +282,10 @@ const fetchProducts = async () => {
       page: page.value,
       ...filters.value
     })
-    products.value = response.products
+    products.value = response.products.map(item => ({
+      id: Number(item.id),
+      ...item.attributes
+    }))
     totalPages.value = response.meta.total_pages
   } catch (error) {
     console.error('Failed to fetch products:', error)

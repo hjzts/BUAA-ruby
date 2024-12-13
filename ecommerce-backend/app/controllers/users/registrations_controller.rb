@@ -7,11 +7,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def respond_with(resource, _opts = {})
     if resource.persisted?
-      @token = request.env['warden-jwt_auth.token']
-      headers['Authorization'] = @token
+      @token = request.env["warden-jwt_auth.token"]
+      headers["Authorization"] = @token
 
       render json: {
-        status: { code: 200, message: 'Signed up successfully.',
+        status: { code: 200, message: "Signed up successfully.",
                   token: @token,
                   data: UserSerializer.new(resource).serializable_hash[:data][:attributes] }
       }

@@ -61,6 +61,15 @@ export const useAuthStore = defineStore('auth', {
                 console.error('Logout failed:', error)
                 throw error
             }
+        },
+
+        setToken(newToken: string | null) {
+            this.token = newToken
+            if (newToken) {
+              localStorage.setItem('token', newToken)
+            } else {
+              localStorage.removeItem('token')
+            }
         }
     }
 })

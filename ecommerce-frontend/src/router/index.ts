@@ -21,6 +21,12 @@ const router = createRouter({
       component: () => import('../views/Auth/RegisterView.vue')
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/profile/edit',
       name: 'profile-edit',
       component: () => import('../views/ProfileEdit.vue'),
@@ -40,8 +46,8 @@ const router = createRouter({
     {
       path: '/admin/products',
       name: 'admin-products',
-      component: () => import('../views/admin/ProductList.vue'),
-      meta: { requiresAdmin: true }
+      component: () => import('../views/admin/ProductList.vue')
+      // meta: { requiresAdmin: true }
     }
   ],
 })

@@ -16,6 +16,17 @@ class User < ApplicationRecord
     Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
   end
 
+  def generate_jwt
+    JWT.encode(
+      {
+        sub: id,
+        jti: jti,
+        exp: 24.hours.from_now.to_i
+      },
+      Rails.application.credentials.devise_jwt_secret_key!
+    )
+  end
+
   def admin?
     role == "admin"
   end
