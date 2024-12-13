@@ -2,6 +2,9 @@ class Product < ApplicationRecord
   # 使用active Storage处理图片
   has_one_attached :image
   
+  has_many :product_sizes, dependent: :destroy
+  has_many :sizes, through: :product_sizes
+  
   # 定义status的可选值
   enum :status, {
     active: "active",   # 正常销售

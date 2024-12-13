@@ -23,7 +23,9 @@ Rails.application.routes.draw do
     namespace :v1 do
       resource :profile, only: [:show, :update]
       resource :password, only: [:update]
+      resources :sizes
       resources :products do
+        resources :product_sizes, path: "sizes"
         member do
           post :manage_stock
         end

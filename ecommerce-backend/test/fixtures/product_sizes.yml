@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  product: one
+  size: one
+  stock_quantity: 1
+  price_adjustment: 9.99
+
+two:
+  product: two
+  size: two
+  stock_quantity: 1
+  price_adjustment: 9.99

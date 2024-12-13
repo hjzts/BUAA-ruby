@@ -10,13 +10,13 @@ class ApplicationController < ActionController::API
     end
 
     # # 检查是否为管理员
-    # def ensure_admin!
-    #   unless current_user&.role == "admin"
-    #     render json: {
-    #       error: "Unauthorized. Admin access required."
-    #     }, status: :unauthorized
-    #   end
-    # end
+    def ensure_admin!
+      unless current_user&.role == "admin"
+        render json: {
+          error: "Unauthorized. Admin access required."
+        }, status: :unauthorized
+      end
+    end
     #
     # # 检查是否为特定用户或管理员
     # def ensure_owner_or_admin!(resource_user_id)

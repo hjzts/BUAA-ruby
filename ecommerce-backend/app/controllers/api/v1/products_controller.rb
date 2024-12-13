@@ -101,10 +101,4 @@ class Api::V1::ProductsController < ApplicationController
       :status
     )
   end
-
-  def ensure_admin!
-    unless current_user.role == "admin"
-      render json: { error: "Unauthorized" }, status: :unauthorized
-    end
-  end
 end
