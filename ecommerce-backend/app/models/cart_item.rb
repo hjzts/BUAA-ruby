@@ -29,10 +29,12 @@ class CartItem < ApplicationRecord
   end
 
   def validate_stock_quantity
-    return unless product
-
-    if quantity > product.stock_quantity
-      errors.add(:quantity, "exceeds available stock (#{product.stock_quantity} available)")
-    end
+    # 这里先允许就算超过库存也可以继续加入购物车，只是购买的时候会报错
+    true
+    # return unless product
+    #
+    # if quantity > product.stock_quantity
+    #   errors.add(:quantity, "exceeds available stock (#{product.stock_quantity} available)")
+    # end
   end
 end

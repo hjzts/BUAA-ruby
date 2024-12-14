@@ -149,19 +149,22 @@
               color="primary"
               size="large"
               block
-              :loading="addingToCart"
+              :loading="addingToCart.value"
               :disabled="!canAddToCart"
               class="mb-2"
               @click="addToCart"
             >
               Add to Cart
             </v-btn>
+          </v-card-actions>
+
+          <v-card-actions class="ps-0">
             <v-btn
               :color="isFavorited ? 'error' : undefined"
               :variant="isFavorited ? 'flat' : 'outlined'"
               size="large"
               block
-              :loading="toggleFavorite"
+              :loading="toggleFavorite.value"
               @click="toggleFavorite"
             >
               <v-icon :icon="isFavorited ? 'mdi-heart' : 'mdi-heart-outline'" class="mr-2"/>

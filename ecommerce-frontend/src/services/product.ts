@@ -14,7 +14,12 @@ export const productService = {
 
   // 获取单个产品详情
   async getProduct(id: number) {
-    const response = await api.get<ApiResponse<Product>>(`/products/${id}`)
+    // const response = await api.get<ApiResponse<Product>>(`/products/${id}`)
+    const response = await api.get<ApiResponse<Product>>(`/products/${id}`, {
+      params: {
+        include: 'product_sizes.size,product_colors.color,product_designs.design,categories'
+      }
+    })
     return response.data
   },
 

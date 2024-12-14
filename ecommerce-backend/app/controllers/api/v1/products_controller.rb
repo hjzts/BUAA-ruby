@@ -35,7 +35,9 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def show
-    render json: ProductSerializer.new(@product).serializable_hash[:data]
+    # render json: ProductSerializer.new(@product).serializable_hash[:data]
+    # 我希望这里把product相关的信息都返回，包括product_sizes, product_designs, product_colors, product_categories
+    # render json: ProductSerializer.new(@product, include: [:product_sizes, :product_designs, :product_colors, :product_categories])
   end
 
   def create

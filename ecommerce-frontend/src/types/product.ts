@@ -1,6 +1,26 @@
 import type { PaginationParams } from '@/types/common.ts'
 import type { Category } from '@/types/category.ts'
 
+// export interface Product {
+//   id: number
+//   product_name: string
+//   description: string
+//   price: number
+//   stock_quantity: number
+//   sales_count: number
+//   status: 'active' | 'inactive' | 'deleted'
+//   image_url?: string
+//   in_stock: boolean
+//   created_at: string
+//   updated_at: string
+//
+//   // 关联数据
+//   sizes?: ProductSize[]
+//   colors?: ProductColor[]
+//   designs?: ProductDesign[]
+//   categories?: Category[]
+// }
+
 export interface Product {
   id: number
   product_name: string
@@ -14,11 +34,50 @@ export interface Product {
   created_at: string
   updated_at: string
 
-  // 关联数据
-  sizes?: ProductSize[]
-  colors?: ProductColor[]
-  designs?: ProductDesign[]
-  categories?: Category[]
+  // 尺码相关
+  sizes: Array<{
+    id: number
+    size_id: number
+    stock_quantity: number
+    price_adjustment: number
+    size: {
+      id: number
+      size_name: string
+      description: string
+    }
+  }>
+
+  // 颜色相关
+  colors: Array<{
+    id: number
+    color_id: number
+    price_adjustment: number
+    color: {
+      id: number
+      rgb: string
+      description: string
+    }
+  }>
+
+  // 设计相关
+  designs: Array<{
+    id: number
+    design_id: number
+    price_adjustment: number
+    design: {
+      id: number
+      design_number: string
+      sales: number
+    }
+  }>
+
+  // 分类信息
+  categories: Array<{
+    id: number
+    name: string
+    description: string
+    icon_url: string
+  }>
 }
 
 export interface ProductSize {
