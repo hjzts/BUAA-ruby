@@ -40,6 +40,11 @@ Rails.application.routes.draw do
           get "check", to: "favorites#check"
         end
       end
+      resources :orders do
+        member do
+          post :cancel
+        end
+      end
 
     end
   end

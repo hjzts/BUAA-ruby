@@ -11,12 +11,28 @@ class User < ApplicationRecord
 
   has_many :favorites, dependent: :destroy
   has_many :favorited_products, through: :favorites, source: :product
+  has_many :orders, dependent: :destroy
+  has_many :order_items, through: :orders
 
   validates :username, presence: true
   validates :role, inclusion: { in: %w[admin buyer] }
 
   def avatar_url
     Rails.application.routes.url_helpers.url_for(avatar) if avatar.attached?
+  end
+
+  # 订单查询作用域
+  scope :with_pending_orders, -> { joins(:orders).where(orders: { status: 'pending' }) }
+  scope :with_paid_orders, -> { joins(:orders).where(orders: { status: 'paid' }) }
+  scope :with_completed_orders, -> { joins(:orders).where(orders: { status: 'delivered' }) }
+
+  # 订单统计方法
+  def total_order_amount
+    orders.sum(:total_amount)
+  end
+
+  def recent_orders(limit = 5)
+    orders.order(created_at: :desc).limit(limit)
   end
 
   def generate_jwt

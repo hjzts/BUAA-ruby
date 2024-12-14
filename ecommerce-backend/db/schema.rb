@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_14_015606) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -64,6 +64,41 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_015606) do
     t.index ["product_id"], name: "index_favorites_on_product_id"
     t.index ["user_id", "product_id"], name: "index_favorites_on_user_id_and_product_id", unique: true
     t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
+
+  create_table "order_items", force: :cascade do |t|
+    t.integer "order_id", null: false
+    t.integer "product_id", null: false
+    t.integer "quantity", null: false
+    t.decimal "unit_price", precision: 10, scale: 2, null: false
+    t.decimal "total_price", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "product_id"], name: "index_order_items_on_order_id_and_product_id"
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+    t.index ["product_id", "created_at"], name: "index_order_items_on_product_id_and_created_at"
+    t.index ["product_id"], name: "index_order_items_on_product_id"
+    t.index ["total_price"], name: "index_order_items_on_total_price"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "recipient_name", null: false
+    t.string "shipping_address", null: false
+    t.string "phone_number", null: false
+    t.string "postal_code", null: false
+    t.string "status", default: "pending", null: false
+    t.decimal "total_amount", precision: 10, scale: 2, null: false
+    t.datetime "paid_at"
+    t.datetime "shipped_at"
+    t.datetime "delivered_at"
+    t.datetime "cancelled_at"
+    t.text "cancellation_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_orders_on_created_at"
+    t.index ["status"], name: "index_orders_on_status"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "product_colors", force: :cascade do |t|
@@ -144,6 +179,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_015606) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "favorites", "products"
   add_foreign_key "favorites", "users"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "users"
   add_foreign_key "product_colors", "colors"
   add_foreign_key "product_colors", "products"
   add_foreign_key "product_designs", "designs"

@@ -10,9 +10,11 @@ class Product < ApplicationRecord
   has_many :colors, through: :product_colors
   has_many :favorites, dependent: :destroy
   has_many :favorited_by_users, through: :favorites, source: :user
+  has_many :order_items
+  has_many :orders, through: :order_items
 
   # 定义status的可选值
-  enum :status, {
+  enum status: {
     active: "active", # 正常销售
     inactive: "inactive", # 下架
     deleted: "deleted" # 删除
@@ -32,6 +34,15 @@ class Product < ApplicationRecord
   scope :available, -> { where(status: "active").where("stock_quantity > 0") }
   scope :out_of_stock, -> { where(status: "active").where("stock_quantity = 0") }
   scope :price_between, ->(min, max) { where(price: min..max) }
+
+  # 订单相关作用域
+  scope :ordered, -> { joins(:order_items).distinct }
+  scope :best_sellers, -> {
+    joins(:order_items)
+      .select('products.*, SUM(order_items.quantity) as total_sold')
+      .group('products.id')
+      .order('total_sold DESC')
+  }
 
   # 获取图片URL
   def image_url
@@ -68,6 +79,20 @@ class Product < ApplicationRecord
   rescue StandardError => e
     Rails.logger.error "Failed to increase stock: #{e.message}"
     false
+  end
+
+  # 订单相关方法
+  def total_sales_quantity
+    order_items.sum(:quantity)
+  end
+
+  def total_sales_amount
+    order_items.sum('quantity * unit_price')
+  end
+
+  def update_stock(amount)
+    return false if amount < 0 && stock_quantity < amount.abs
+    update(stock_quantity: stock_quantity + amount)
   end
 
   # 软删除
