@@ -49,7 +49,7 @@ Rails.application.routes.draw do
       end
       resources :favorites, only: [ :index, :create, :destroy ] do
         collection do
-          get "check", to: "favorites#check"
+          get "check/:product_id", to: "favorites#check"
         end
       end
       resources :orders do

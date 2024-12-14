@@ -34,4 +34,8 @@ class Api::V1::FavoritesController < ApplicationController
   def set_product
     @product = Product.find(params[:product_id])
   end
+
+  def favorite_params
+    params.require(:favorite).permit(:product_id)
+  end
 end
