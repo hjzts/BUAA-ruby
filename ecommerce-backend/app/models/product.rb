@@ -2,6 +2,7 @@ class Product < ApplicationRecord
   # 使用active Storage处理图片
   has_one_attached :image
 
+  belongs_to :user # 创建者/管理员
   has_many :product_sizes, dependent: :destroy
   has_many :sizes, through: :product_sizes
   has_many :product_designs, dependent: :destroy
@@ -14,7 +15,7 @@ class Product < ApplicationRecord
   has_many :orders, through: :order_items
   has_many :product_categories, dependent: :destroy
   has_many :categories, through: :product_categories
-
+  has_many :cart_items, dependent: destroy
 
   # 定义status的可选值
   enum :status, {
@@ -28,15 +29,19 @@ class Product < ApplicationRecord
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :stock_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :sales_count, numericality: { greater_than_or_equal_to: 0 }
-  validates :status, inclusion: { in: Product.statuses.keys }
+  validates :status, presence: true, inclusion: { in: Product.statuses.keys }
 
   # 默认排序
   default_scope { order(created_at: :desc) }
 
   # 常用查询范围
   scope :available, -> { where(status: "active").where("stock_quantity > 0") }
+  scope :by_category, ->(category_id) { joins(:categories).where(categories: { id: category_id }) }
   scope :out_of_stock, -> { where(status: "active").where("stock_quantity = 0") }
   scope :price_between, ->(min, max) { where(price: min..max) }
+  scope :search, ->(query) {
+    where('product_name ILIKE :q OR description ILIKE :q', q: "%#{query}%")
+  }
 
   # 订单相关作用域
   scope :ordered, -> { joins(:order_items).distinct }
@@ -96,6 +101,13 @@ class Product < ApplicationRecord
   def update_stock(amount)
     return false if amount < 0 && stock_quantity < amount.abs
     update(stock_quantity: stock_quantity + amount)
+  end
+
+  def update_stock!(amount, operation = :decrease)
+    return false if operation == :decrease && amount > stock_quantity
+
+    new_quantity = operation == :decrease ? (stock_quantity - amount) : (stock_quantity + amount)
+    update!(stock_quantity: new_quantity)
   end
 
   # 软删除

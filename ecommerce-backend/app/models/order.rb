@@ -1,4 +1,6 @@
 class Order < ApplicationRecord
+  include AASM
+
   belongs_to :user
   has_many :order_items, dependent: :destroy
   has_many :products, through: :order_items
@@ -17,6 +19,44 @@ class Order < ApplicationRecord
     delivered: "delivered",
     cancelled: "cancelled"
   }
+
+  # 状态机
+  aasm column: 'status' do
+    state :pending, initial: true
+    state :paid, :shipped, :delivered, :cancelled
+
+    event :pay do
+      transitions from: :pending, to: :paid
+      after do
+        update!(paid_at: Time.current)
+      end
+    end
+
+    event :ship do
+      transitions from: :paid, to: :shipped
+      after do
+        update!(shipped_at: Time.current)
+      end
+    end
+
+    event :deliver do
+      transitions from: :shipped, to: :delivered
+      after do
+        update!(delivered_at: Time.current)
+      end
+    end
+
+    event :cancel do
+      transitions from: [:pending, :paid], to: :cancelled
+      after do |reason|
+        update!(cancelled_at: Time.current, cancellation_reason: reason)
+        # 恢复库存
+        order_items.each do |item|
+          item.product.update_stock!(item.quantity, :increase)
+        end
+      end
+    end
+  end
 
   # 回调
   before_validation :set_initial_status, on: :create

@@ -31,6 +31,17 @@ class Api::V1::CartItemsController < ApplicationController
     end
   end
 
+  def batch_update
+    updates = params[:updates]
+
+    CartItem.transaction do
+      updates.each do |update|
+        cart_item = current_user.cart_items.find(update[:id])
+        cart_item.update!(quantity: update[:quantity])
+      end
+    end
+  end
+
   def destroy
     @cart_item.destroy
     head :no_content

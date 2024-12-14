@@ -21,6 +21,17 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      # 管理员路由
+      namespace :admin do
+        resources :products
+        resources :orders , only: [:index, :show] do
+          member do
+            post :ship
+            post :cancel
+          end
+        end
+      end
+
 
       resource :profile, only: [ :show, :update ]
       resource :password, only: [ :update ]
@@ -43,7 +54,9 @@ Rails.application.routes.draw do
       end
       resources :orders do
         member do
+          post :pay
           post :cancel
+          post :confirm_delivery
         end
       end
       resources :products do
@@ -51,6 +64,7 @@ Rails.application.routes.draw do
       end
       resources :cart_items do
         collection do
+          post  :batch_update
           delete :clear
           get :count
           get :total

@@ -14,6 +14,14 @@ class CartItem < ApplicationRecord
     product.price * quantity
   end
 
+  def update!
+    if quantity.zero?
+      destroy
+    else
+      save
+    end
+  end
+
   private
 
   def set_added_at

@@ -38,14 +38,19 @@ class Api::V1::OrdersController < ApplicationController
 
     Order.transaction do
       if @order.save
-        params[:items].each do |item|
+        # 从购物车创建订单项
+        current_user.cart_items.each do |cart_item|
           @order.order_items.create!(
-            product_id: item[:product_id],
-            quantity: item[:quantity]
+            product: cart_item.product,
+            quantity: cart_item.quantity,
+            unit_price: cart_item.product.price
           )
+          cart_item.product.update_stock!(cart_item.quantity, :decrease)
         end
 
-        @order.update!(total_amount: @order.calculate_total)
+        @order.update!(total_amount: @order.order_items.sum(&:total_price))
+        current_user.cart_items.destroy_all # 清空购物车
+
         render json: OrderSerializer.new(@order).serializable_hash, status: :created
       else
         render json: { errors: @order.errors.full_messages }, status: :unprocessable_entity
@@ -74,11 +79,27 @@ class Api::V1::OrdersController < ApplicationController
     end
   end
 
+  def pay
+    if @order.pay!
+      render json: OrderSerializer.new(@order).serializable_hash
+    else
+      render json: { error: "Cannot pay this order" }, status: :unprocessable_entity
+    end
+  end
+
   def cancel
     if @order.cancel!(params[:reason])
       render json: OrderSerializer.new(@order).serializable_hash
     else
       render json: { error: "Cannot cancel this order" }, status: :unprocessable_entity
+    end
+  end
+
+  def confirm_delivery
+    if @order.deliver!
+      render json: OrderSerializer.new(@order).serializable_hash
+    else
+      render json: { error: "Cannot deliver this order" }, status: :unprocessable_entity
     end
   end
 
