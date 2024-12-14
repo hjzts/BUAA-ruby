@@ -1,3 +1,4 @@
+require 'aasm'
 class Order < ApplicationRecord
   include AASM
 
@@ -12,7 +13,7 @@ class Order < ApplicationRecord
   validates :status, inclusion: { in: %w[pending paid shipped delivered cancelled] }
 
   # 订单状态枚举
-  enum :status ,{
+  enum :status , {
     pending: "pending",
     paid: "paid",
     shipped: "shipped",

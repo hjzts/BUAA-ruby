@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_14_091840) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_14_100724) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -179,8 +179,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_091840) do
     t.string "status", default: "active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["product_name"], name: "index_products_on_product_name"
     t.index ["status"], name: "index_products_on_status"
+    t.index ["user_id"], name: "index_products_on_user_id"
   end
 
   create_table "sizes", force: :cascade do |t|
@@ -227,4 +229,5 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_091840) do
   add_foreign_key "product_designs", "products"
   add_foreign_key "product_sizes", "products"
   add_foreign_key "product_sizes", "sizes"
+  add_foreign_key "products", "users"
 end

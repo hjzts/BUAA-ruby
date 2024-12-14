@@ -15,7 +15,7 @@ class Product < ApplicationRecord
   has_many :orders, through: :order_items
   has_many :product_categories, dependent: :destroy
   has_many :categories, through: :product_categories
-  has_many :cart_items, dependent: destroy
+  has_many :cart_items, dependent: :destroy
 
   # 定义status的可选值
   enum :status, {
