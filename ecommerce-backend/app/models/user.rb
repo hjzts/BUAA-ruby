@@ -9,6 +9,9 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
 
+  has_many :favorites, dependent: :destroy
+  has_many :favorited_products, through: :favorites, source: :product
+
   validates :username, presence: true
   validates :role, inclusion: { in: %w[admin buyer] }
 

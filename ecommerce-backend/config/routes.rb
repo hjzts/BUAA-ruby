@@ -21,8 +21,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :profile, only: [:show, :update]
-      resource :password, only: [:update]
+
+      resource :profile, only: [ :show, :update ]
+      resource :password, only: [ :update ]
       resources :sizes
       resources :designs
       resources :colors
@@ -34,6 +35,12 @@ Rails.application.routes.draw do
           post :manage_stock
         end
       end
+      resources :favorites, only: [ :index, :create, :destroy ] do
+        collection do
+          get "check", to: "favorites#check"
+        end
+      end
+
     end
   end
 end

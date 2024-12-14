@@ -43,7 +43,7 @@ class Users::SessionsController < Devise::SessionsController
         status: {
           code: 200,
           message: "Logged in successfully.",
-          token: tokenz
+          token: token
         },
         data: UserSerializer.new(resource).serializable_hash[:data][:attributes]
       },status: :ok

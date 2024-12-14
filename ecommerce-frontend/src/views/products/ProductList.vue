@@ -107,7 +107,6 @@
       </v-col>
 
       <!-- 产品展示区 -->
-      aaaa
       <v-col cols="12">
         <v-row v-if="!loading">
           <template v-if="products.length">

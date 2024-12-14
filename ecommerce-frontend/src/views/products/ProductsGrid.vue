@@ -138,7 +138,7 @@ const filters = ref({
   search: '',
   available: false as boolean,
   min_price: 0 as number,
-  max_price: 1000 as number
+  max_price: 10000 as number
 })
 
 const error = ref<string | null>(null)

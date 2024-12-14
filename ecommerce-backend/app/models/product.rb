@@ -1,31 +1,33 @@
 class Product < ApplicationRecord
   # 使用active Storage处理图片
   has_one_attached :image
-  
+
   has_many :product_sizes, dependent: :destroy
   has_many :sizes, through: :product_sizes
   has_many :product_designs, dependent: :destroy
   has_many :designs, through: :product_designs
   has_many :product_colors, dependent: :destroy
   has_many :colors, through: :product_colors
-  
+  has_many :favorites, dependent: :destroy
+  has_many :favorited_by_users, through: :favorites, source: :user
+
   # 定义status的可选值
   enum :status, {
-    active: "active",   # 正常销售
+    active: "active", # 正常销售
     inactive: "inactive", # 下架
     deleted: "deleted" # 删除
   }
-  
+
   # 验证
   validates :product_name, presence: true, length: { minimum: 2, maximum: 100 }
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :stock_quantity, numericality: { greater_than_or_equal_to: 0 }
   validates :sales_count, numericality: { greater_than_or_equal_to: 0 }
   validates :status, inclusion: { in: Product.statuses.keys }
-  
+
   # 默认排序
   default_scope { order(created_at: :desc) }
-  
+
   # 常用查询范围
   scope :available, -> { where(status: "active").where("stock_quantity > 0") }
   scope :out_of_stock, -> { where(status: "active").where("stock_quantity = 0") }
