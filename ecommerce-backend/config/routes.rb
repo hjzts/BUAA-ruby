@@ -49,7 +49,13 @@ Rails.application.routes.draw do
       resources :products do
         resources :product_categories, only: [:create, :destroy], path: 'categories'
       end
-
+      resources :cart_items do
+        collection do
+          delete :clear
+          get :count
+          get :total
+        end
+      end
     end
   end
 end

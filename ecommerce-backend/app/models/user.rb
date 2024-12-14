@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_many :favorited_products, through: :favorites, source: :product
   has_many :orders, dependent: :destroy
   has_many :order_items, through: :orders
+  has_many :cart_items, dependent: :destroy
 
   validates :username, presence: true
   validates :role, inclusion: { in: %w[admin buyer] }
@@ -33,6 +34,11 @@ class User < ApplicationRecord
 
   def recent_orders(limit = 5)
     orders.order(created_at: :desc).limit(limit)
+  end
+
+  # 获取购物车中所有商品的总价
+  def cart_total
+    cart_items.sum(&:subtotal)
   end
 
   def generate_jwt
