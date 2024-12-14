@@ -87,14 +87,54 @@ export const productService = {
     const response = await api.get<JSONAPIResponse<Product>>('/api/v1/products', {
       params: filters
     })
-    const normalized = normalizeJSONAPIResponse(response.data)
-    return {
-      products: normalized.data as Product[],
-      meta: normalized.meta
-    }
+
+    // console.log("response: ",response)
+    // const normalized = normalizeJSONAPIResponse(response.data)
+    // console.log("normalized: ",normalized.data)
+    // console.log("meta: ",normalized.meta)
+    // return {
+    //   products: normalized.data as Product[],
+    //   meta: normalized.meta
+    // }
+    return response.data
   },
 
-  // ... 其他现有方法保持不变 ...
+  async getProduct(id: number) {
+    const response = await api.get<JSONAPIResponse<Product>>(`/api/v1/products/${id}`)
+
+    // const normalized = normalizeJSONAPIResponse(response.data)
+    // return normalized.data as Product
+    return response.data
+  },
+
+  async createProduct(formData: FormData) {
+    const response = await api.post<JSONAPIResponse<Product>>('/api/v1/products', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    const normalized = normalizeJSONAPIResponse(response.data)
+    return normalized.data as Product
+  },
+
+  async updateProduct(id: number, formData: FormData) {
+    const response = await api.put<JSONAPIResponse<Product>>(`/api/v1/products/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    const normalized = normalizeJSONAPIResponse(response.data)
+    return normalized.data as Product
+  },
+
+  async deleteProduct(id: number) {
+    await api.delete(`/api/v1/products/${id}`)
+  },
+
+  async manageStock(id: number, operation: 'increase' | 'decrease', amount: number) {
+    const response = await api.post<JSONAPIResponse<Product>>(`/api/v1/products/${id}/manage_stock`, {
+      operation,
+      amount
+    })
+    const normalized = normalizeJSONAPIResponse(response.data)
+    return normalized.data as Product
+  },
 
   // 添加管理产品颜色的方法
   async addProductColor(productId: number, data: {

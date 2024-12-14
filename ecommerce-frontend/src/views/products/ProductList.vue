@@ -7,6 +7,7 @@
       temporary
       width="300"
     >
+
       <v-list>
         <v-list-subheader>Filters</v-list-subheader>
 
@@ -71,6 +72,7 @@
           />
         </v-list-item>
       </v-list>
+
     </v-navigation-drawer>
 
     <!-- 主内容区 -->
@@ -105,6 +107,7 @@
       </v-col>
 
       <!-- 产品展示区 -->
+      aaaa
       <v-col cols="12">
         <v-row v-if="!loading">
           <template v-if="products.length">
@@ -123,7 +126,7 @@
                   @click="navigateToProduct(product.id)"
                 >
                   <v-img
-                    :src="product.image_url"
+                    :src="product.image_url || '/placeholder.png'"
                     height="200"
                     cover
                     class="align-end"
@@ -144,15 +147,23 @@
                       <span class="text-h6">${{ product.price }}</span>
                       <v-spacer/>
                       <div class="color-dots">
-                        <span
-                          v-for="color in product.colors.slice(0, 3)"
-                          :key="color.id"
-                          class="color-dot"
-                          :style="{ backgroundColor: color.rgb }"
-                        />
-                        <span v-if="product.colors.length > 3" class="more-colors">
-                          +{{ product.colors.length - 3 }}
-                        </span>
+                        <!-- 首先判断product和colors是否存在 -->
+                        <template v-if="product?.colors?.length">
+                          <span
+                            v-for="product_color in product.colors.slice(0, 3)"
+                            :key="product_color?.id"
+                            class="color-dot"
+                            :style="{
+                              backgroundColor: getColorRGB(product_color)
+                            }"
+                          />
+                          <span v-if="product.colors.length > 3" class="more-colors">
+                            +{{ product.colors.length - 3 }}
+                          </span>
+                        </template>
+
+                        <!-- 当没有颜色时显示默认颜色 -->
+                        <span v-else class="color-dot default-color"></span>
                       </div>
                     </div>
                   </v-card-subtitle>
@@ -160,13 +171,35 @@
                   <v-card-text>
                     <div class="text-truncate">{{ product.description }}</div>
                     <div class="mt-2">
+                      <!-- 有尺码数据时显示实际尺码 -->
+                      <template v-if="product?.sizes?.length">
+                        <v-chip
+                          v-for="size in product.sizes.slice(0, 3)"
+                          :key="size?.id || index"
+                          size="small"
+                          class="mr-1"
+                        >
+                          {{ getSizeName(size) }}
+                        </v-chip>
+                        <!-- 显示更多尺码提示 -->
+                        <v-chip
+                          v-if="product.sizes.length > 3"
+                          size="small"
+                          class="mr-1"
+                          variant="outlined"
+                        >
+                          +{{ product.sizes.length - 3 }}
+                        </v-chip>
+                      </template>
+
+                      <!-- 没有尺码数据时显示默认提示 -->
                       <v-chip
-                        v-for="size in product.sizes.slice(0, 3)"
-                        :key="size.id"
+                        v-else
                         size="small"
                         class="mr-1"
+                        color="grey-lighten-1"
                       >
-                        {{ size.size_name }}
+                        No size available
                       </v-chip>
                     </div>
                   </v-card-text>
@@ -213,7 +246,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import debounce from 'lodash/debounce'
 import { productService, type Product } from '@/utils/product'
-import { colorService, type Color } from '@/utils/color'
+import { colorService, type Color, type ProductColor } from '@/utils/color'
 import { sizeService, type Size } from '@/utils/size'
 import { designService, type Design } from '@/utils/design'
 
@@ -244,7 +277,11 @@ const fetchProducts = async () => {
       page: page.value,
       ...filters.value
     })
-    products.value = response.products
+    console.log('response:', response)
+    products.value = response.products.map(item => ({
+      id: Number(item.id),
+      ...item.attributes
+    }))
     totalPages.value = response.meta.total_pages
   } catch (error) {
     console.error('Failed to fetch products:', error)
@@ -316,6 +353,17 @@ onMounted(() => {
   fetchProducts()
   fetchFilterOptions()
 })
+
+// 处理颜色逻辑的函数
+const getColorRGB = (product_color: ProductColor | null): string => {
+  // 返回颜色值，如果无效则返回默认颜色
+  return product_color?.color?.rgb ?? '#CCCCCC'
+}
+
+// 获取尺码名称，提供默认值
+const getSizeName = (size: Size | null): string => {
+  return size?.size_name ?? 'N/A'
+}
 </script>
 
 <style scoped>
@@ -330,6 +378,10 @@ onMounted(() => {
   height: 16px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.default-color {
+  background-color: #2ecb62;
 }
 
 .more-colors {
@@ -351,5 +403,13 @@ onMounted(() => {
 
 .gap-2 {
   gap: 8px;
+}
+
+.mt-2 {
+  margin-top: 8px;
+}
+
+.mr-1 {
+  margin-right: 4px;
 }
 </style>

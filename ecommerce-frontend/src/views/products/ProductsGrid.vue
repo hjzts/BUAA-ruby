@@ -126,7 +126,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { productService, type Product } from '@/utils/product'
+import { productService, type Product } from '@/utils/product.ts'
 import debounce from 'lodash/debounce'
 
 const router = useRouter()

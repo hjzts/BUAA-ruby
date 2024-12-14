@@ -168,9 +168,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { productService, type Product } from '@/utils/product'
-import {type Color} from '@/utils/color'
-import {type Size} from '@/utils/size'
-import {type Design} from '@/utils/design'
+import {type ProductColor} from '@/utils/color'
+import {type ProductSize} from '@/utils/size'
+import {type ProductDesign} from '@/utils/design'
 
 const route = useRoute()
 const router = useRouter()
@@ -180,9 +180,9 @@ const relatedProducts = ref<Product[]>([])
 const quantity = ref(1)
 
 // 选中的选项
-const selectedColor = ref<Color | null>( null)
-const selectedSize = ref<Size | null>(null)
-const selectedDesign = ref<Design | null>(null)
+const selectedColor = ref<ProductColor | null>( null)
+const selectedSize = ref<ProductSize | null>(null)
+const selectedDesign = ref<ProductDesign | null>(null)
 
 // 计算属性
 const calculatePrice = computed(() => {

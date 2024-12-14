@@ -13,7 +13,7 @@ api.interceptors.request.use(config => {
   if (token) {
     config.headers.Authorization = `${token}`
   }
-  console.log("config: ",config)
+  // console.log("config: ",config)
   return config
 })
 

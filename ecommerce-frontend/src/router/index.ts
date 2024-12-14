@@ -11,6 +11,11 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: '/home',
+      name: 'home',
+      component: HomeView,
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/Auth/LoginView.vue')
@@ -41,7 +46,7 @@ const router = createRouter({
     {
       path: '/only-products',
       name: 'only-products',
-      component: () => import('../views/ProductsGrid.vue')
+      component: () => import('../views/products/ProductsGrid.vue')
     },
     {
       path: '/admin/products',

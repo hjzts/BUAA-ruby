@@ -8,6 +8,23 @@
       </v-col>
     </v-row>
 
+    <!-- 产品浏览卡片 - 对所有用户可见 -->
+    <v-row class="mt-8">
+      <v-col cols="12">
+        <v-card to="/products" class="mx-auto" max-width="800" elevation="3">
+          <v-card-item>
+            <v-card-title class="text-h5">Browse Products</v-card-title>
+            <v-card-subtitle>
+              Discover our latest collections and special offers
+            </v-card-subtitle>
+          </v-card-item>
+          <v-card-text class="d-flex align-center justify-center pa-6">
+            <v-icon size="64" color="primary">mdi-shopping</v-icon>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <!-- 快速访问卡片 -->
     <v-row class="mt-8">
       <!-- 未登录状态显示的卡片 -->
@@ -84,8 +101,26 @@
             </v-card-text>
           </v-card>
         </v-col>
+
+        <!-- 管理员专用卡片 -->
+        <v-col v-if="authStore.isAdmin" cols="12" md="3">
+          <v-card to="/admin/products" class="mx-auto" max-width="400" color="primary">
+            <v-card-item>
+              <v-card-title class="text-white">Product Management</v-card-title>
+              <v-card-subtitle class="text-white">
+                Manage product inventory
+              </v-card-subtitle>
+            </v-card-item>
+            <v-card-text>
+              <v-icon size="large" color="white">mdi-package-variant</v-icon>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
       </template>
     </v-row>
+
+
   </v-container>
 </template>
 
@@ -94,3 +129,5 @@ import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
 </script>
+
+<style scoped></style>
