@@ -208,3 +208,148 @@ puts "- #{User.where(role: 'buyer').count} buyers"
 puts "- #{Product.count} total products"
 puts "- #{Product.where(status: 'active').count} active products"
 puts "- #{Product.where(stock_quantity: 0).count} out-of-stock products"
+
+# db/seeds/orders.rb
+puts "Creating orders..."
+
+# 辅助方法：检查用户是否已存在订单
+def user_has_order?(user_id, created_at)
+  Order.exists?(user_id: user_id, created_at: created_at)
+end
+
+# 辅助方法：创建订单项
+def create_order_items(order)
+  # 随机选择2-4个产品
+  products = Product.all.sample(rand(2..4))
+  total_amount = 0
+
+  products.each do |product|
+    quantity = rand(1..3)
+    item_total = product.price * quantity
+    total_amount += item_total
+
+    OrderItem.create!(
+      order: order,
+      product: product,
+      quantity: quantity,
+      unit_price: product.price,
+      total_price: item_total
+    )
+  end
+
+  order.update!(total_amount: total_amount)
+end
+
+# 辅助方法：创建付款订单
+def create_paid_order(user, created_time)
+  order = Order.create!(
+    user: user,
+    recipient_name: "#{user.username}",
+    shipping_address: "123 Test Street, Test City",
+    phone_number: "1234567890",
+    postal_code: "123456",
+    status: "paid",
+    created_at: created_time,
+    paid_at: created_time + 30.minutes,
+    total_amount: 0  # 临时设置，稍后更新
+  )
+  create_order_items(order)
+  order
+end
+
+# 辅助方法：创建已发货订单
+def create_shipped_order(user, created_time)
+  order = Order.create!(
+    user: user,
+    recipient_name: "#{user.username}",
+    shipping_address: "456 Test Avenue, Test City",
+    phone_number: "1234567890",
+    postal_code: "123456",
+    status: "shipped",
+    created_at: created_time,
+    paid_at: created_time + 30.minutes,
+    shipped_at: created_time + 1.day,
+    total_amount: 0  # 临时设置，稍后更新
+  )
+  create_order_items(order)
+  order
+end
+
+# 辅助方法：创建已送达订单
+def create_delivered_order(user, created_time)
+  order = Order.create!(
+    user: user,
+    recipient_name: "#{user.username}",
+    shipping_address: "789 Test Road, Test City",
+    phone_number: "1234567890",
+    postal_code: "123456",
+    status: "delivered",
+    created_at: created_time,
+    paid_at: created_time + 30.minutes,
+    shipped_at: created_time + 1.day,
+    delivered_at: created_time + 3.days,
+    total_amount: 0  # 临时设置，稍后更新
+  )
+  create_order_items(order)
+  order
+end
+
+# 辅助方法：创建已取消订单
+def create_cancelled_order(user, created_time)
+  order = Order.create!(
+    user: user,
+    recipient_name: "#{user.username}",
+    shipping_address: "321 Test Lane, Test City",
+    phone_number: "1234567890",
+    postal_code: "123456",
+    status: "cancelled",
+    created_at: created_time,
+    cancelled_at: created_time + 2.hours,
+    cancellation_reason: ["Changed mind", "Found better price", "Ordered by mistake"].sample,
+    total_amount: 0  # 临时设置，稍后更新
+  )
+  create_order_items(order)
+  order
+end
+
+# 开始创建订单
+User.all.each do |user|
+  puts "Creating orders for user: #{user.username}"
+
+  # 待支付订单
+  unless user_has_order?(user.id, Time.current - 2.hours)
+    order = Order.create!(
+      user: user,
+      recipient_name: "#{user.username}",
+      shipping_address: "Test Address",
+      phone_number: "1234567890",
+      postal_code: "123456",
+      status: "pending",
+      created_at: Time.current - 2.hours,
+      total_amount: 0  # 临时设置，稍后更新
+    )
+    create_order_items(order)
+  end
+
+  # 已支付订单
+  unless user_has_order?(user.id, Time.current - 1.day)
+    create_paid_order(user, Time.current - 1.day)
+  end
+
+  # 已发货订单
+  unless user_has_order?(user.id, Time.current - 3.days)
+    create_shipped_order(user, Time.current - 3.days)
+  end
+
+  # 已送达订单
+  unless user_has_order?(user.id, Time.current - 7.days)
+    create_delivered_order(user, Time.current - 7.days)
+  end
+
+  # 已取消订单
+  unless user_has_order?(user.id, Time.current - 5.days)
+    create_cancelled_order(user, Time.current - 5.days)
+  end
+end
+
+puts "Created #{Order.count} orders with #{OrderItem.count} items"

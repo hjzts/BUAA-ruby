@@ -4,12 +4,13 @@ class Order < ApplicationRecord
   has_many :products, through: :order_items
 
   validates :recipient_name, :shipping_address, :phone_number, :postal_code, presence: true
-  validates :total_amount, numericality: { greater_than: 0 }
+  # validates :total_amount, numericality: { greater_than: 0 }
+  validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :phone_number, format: { with: /\A\d{10,11}\z/, message: "should be 10-11 digits" }
   validates :status, inclusion: { in: %w[pending paid shipped delivered cancelled] }
 
   # 订单状态枚举
-  enum status: {
+  enum :status ,{
     pending: "pending",
     paid: "paid",
     shipped: "shipped",

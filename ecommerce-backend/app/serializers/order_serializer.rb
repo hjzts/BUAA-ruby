@@ -1,6 +1,6 @@
 class OrderSerializer
   include JSONAPI::Serializer
-  attributes :recipient_time, :shipping_address, :phone_number, :postal_code, :status, :total_amount, :paid_at, :shipped_at, :delivered_at, :cancelled_at, :cancellation_reason, :created_at
+  attributes :id, :recipient_name, :shipping_address, :phone_number, :postal_code, :status, :total_amount, :paid_at, :shipped_at, :delivered_at, :cancelled_at, :cancellation_reason, :created_at
 
   attribute :items do |order|
     order.order_items.map do |item|

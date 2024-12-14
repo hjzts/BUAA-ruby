@@ -3,7 +3,7 @@ class Api::V1::OrdersController < ApplicationController
   before_action :set_order, only: [:show, :update, :cancel]
 
   def index
-    @orders = current_user.orders.includes(:order_items)
+    @orders = current_user.orders.includes(:order_items, order_items: :product)
 
     # 状态筛选
     @orders = @orders.where(status: params[:status]) if params[:status].present?

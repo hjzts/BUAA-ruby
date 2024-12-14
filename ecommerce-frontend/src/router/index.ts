@@ -51,8 +51,8 @@ const router = createRouter({
     {
       path: '/admin/products',
       name: 'admin-products',
-      component: () => import('../views/admin/ProductList.vue')
-      // meta: { requiresAdmin: true }
+      component: () => import('../views/admin/ProductList.vue'),
+      meta: { requiresAdmin: true }
     },
     {
       path: '/products',
@@ -68,6 +68,18 @@ const router = createRouter({
       path: '/favorites',
       name: 'favorites',
       component: () => import('../views/FavoritesView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/orders',
+      name: 'orders',
+      component: () => import('../views/orders/OrderList.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/orders/:id',
+      name: 'order-detail',
+      component: () => import('../views/orders/OrderDetail.vue'),
       meta: { requiresAuth: true }
     }
   ],
