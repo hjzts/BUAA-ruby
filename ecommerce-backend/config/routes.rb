@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       resources :sizes
       resources :designs
       resources :colors
+      resources :categories
       resources :products do
         resources :product_sizes, path: "sizes"
         resources :product_designs, path: "designs"
@@ -44,6 +45,9 @@ Rails.application.routes.draw do
         member do
           post :cancel
         end
+      end
+      resources :products do
+        resources :product_categories, only: [:create, :destroy], path: 'categories'
       end
 
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_14_072248) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -18,7 +18,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index %w[record_type record_id name blob_id], name: "index_active_storage_attachments_uniqueness", unique: true
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
@@ -36,7 +36,20 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
   create_table "active_storage_variant_records", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
-    t.index %w[blob_id variation_digest], name: "index_active_storage_variant_records_uniqueness", unique: true
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.string "icon_url"
+    t.integer "parent_id"
+    t.integer "position", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_categories_on_name"
+    t.index ["parent_id"], name: "index_categories_on_parent_id"
+    t.index ["position"], name: "index_categories_on_position"
   end
 
   create_table "colors", force: :cascade do |t|
@@ -62,7 +75,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["product_id"], name: "index_favorites_on_product_id"
-    t.index %w[user_id product_id], name: "index_favorites_on_user_id_and_product_id", unique: true
+    t.index ["user_id", "product_id"], name: "index_favorites_on_user_id_and_product_id", unique: true
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
@@ -74,9 +87,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
     t.decimal "total_price", precision: 10, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index %w[order_id product_id], name: "index_order_items_on_order_id_and_product_id"
+    t.index ["order_id", "product_id"], name: "index_order_items_on_order_id_and_product_id"
     t.index ["order_id"], name: "index_order_items_on_order_id"
-    t.index %w[product_id created_at], name: "index_order_items_on_product_id_and_created_at"
+    t.index ["product_id", "created_at"], name: "index_order_items_on_product_id_and_created_at"
     t.index ["product_id"], name: "index_order_items_on_product_id"
     t.index ["total_price"], name: "index_order_items_on_total_price"
   end
@@ -101,6 +114,16 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
+  create_table "product_categories", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.integer "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_product_categories_on_category_id"
+    t.index ["product_id", "category_id"], name: "index_product_categories_on_product_id_and_category_id", unique: true
+    t.index ["product_id"], name: "index_product_categories_on_product_id"
+  end
+
   create_table "product_colors", force: :cascade do |t|
     t.integer "product_id", null: false
     t.integer "color_id", null: false
@@ -108,7 +131,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["color_id"], name: "index_product_colors_on_color_id"
-    t.index %w[product_id color_id], name: "index_product_colors_on_product_id_and_color_id", unique: true
+    t.index ["product_id", "color_id"], name: "index_product_colors_on_product_id_and_color_id", unique: true
     t.index ["product_id"], name: "index_product_colors_on_product_id"
   end
 
@@ -119,7 +142,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["design_id"], name: "index_product_designs_on_design_id"
-    t.index %w[product_id design_id], name: "index_product_designs_on_product_id_and_design_id", unique: true
+    t.index ["product_id", "design_id"], name: "index_product_designs_on_product_id_and_design_id", unique: true
     t.index ["product_id"], name: "index_product_designs_on_product_id"
   end
 
@@ -130,7 +153,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
     t.decimal "price_adjustment", precision: 10, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index %w[product_id size_id], name: "index_product_sizes_on_product_id_and_size_id", unique: true
+    t.index ["product_id", "size_id"], name: "index_product_sizes_on_product_id_and_size_id", unique: true
     t.index ["product_id"], name: "index_product_sizes_on_product_id"
     t.index ["size_id"], name: "index_product_sizes_on_size_id"
   end
@@ -182,6 +205,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_14_024603) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "users"
+  add_foreign_key "product_categories", "categories"
+  add_foreign_key "product_categories", "products"
   add_foreign_key "product_colors", "colors"
   add_foreign_key "product_colors", "products"
   add_foreign_key "product_designs", "designs"

@@ -12,9 +12,12 @@ class Product < ApplicationRecord
   has_many :favorited_by_users, through: :favorites, source: :user
   has_many :order_items
   has_many :orders, through: :order_items
+  has_many :product_categories, dependent: :destroy
+  has_many :categories, through: :product_categories
+
 
   # 定义status的可选值
-  enum status: {
+  enum :status, {
     active: "active", # 正常销售
     inactive: "inactive", # 下架
     deleted: "deleted" # 删除
