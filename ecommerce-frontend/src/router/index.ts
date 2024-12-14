@@ -81,6 +81,11 @@ const router = createRouter({
       name: 'order-detail',
       component: () => import('../views/orders/OrderDetail.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/test-api',
+      name: 'test-api',
+      component: () => import('../views/TestAPI.vue')
     }
   ],
 })
