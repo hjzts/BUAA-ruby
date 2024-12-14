@@ -231,192 +231,6 @@
   <div v-else class="d-flex justify-center align-center" style="height: 400px">
     <v-progress-circular indeterminate color="primary"/>
   </div>
-
-  <!-- 产品规格表 -->
-  <v-row class="mt-8">
-    <v-col cols="12">
-      <v-card>
-        <v-card-title class="bg-grey-lighten-4 py-4 px-6">
-          Product Specifications
-        </v-card-title>
-        <v-table>
-          <tbody>
-          <tr v-if="product.categories?.length">
-            <td class="text-grey-darken-1" width="200">Category</td>
-            <td>
-              <v-chip
-                v-for="category in product.categories"
-                :key="category.id"
-                size="small"
-                class="mr-2"
-              >
-                {{ category.name }}
-              </v-chip>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-grey-darken-1">Available Colors</td>
-            <td>
-              <v-chip
-                v-for="color in product.colors"
-                :key="color.id"
-                size="small"
-                class="mr-2"
-              >
-                {{ color.color.description }}
-              </v-chip>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-grey-darken-1">Available Sizes</td>
-            <td>
-              <v-chip
-                v-for="size in product.sizes"
-                :key="size.id"
-                size="small"
-                class="mr-2"
-              >
-                {{ size.size.size_name }}
-              </v-chip>
-            </td>
-          </tr>
-          <tr>
-            <td class="text-grey-darken-1">Stock Status</td>
-            <td>{{ product.stock_quantity }} units available</td>
-          </tr>
-          </tbody>
-        </v-table>
-      </v-card>
-    </v-col>
-  </v-row>
-
-  <!-- 相关产品 -->
-  <v-row class="mt-8">
-    <v-col cols="12">
-      <h2 class="text-h5 mb-4">Related Products</h2>
-      <v-slide-group show-arrows>
-        <v-slide-group-item
-          v-for="relatedProduct in relatedProducts"
-          :key="relatedProduct.id"
-        >
-          <v-card
-            class="ma-2"
-            width="200"
-            @click="navigateToProduct(relatedProduct.id)"
-          >
-            <v-img
-              :src="relatedProduct.image_url"
-              height="150"
-              cover
-            />
-            <v-card-title class="text-subtitle-1">
-              {{ relatedProduct.product_name }}
-            </v-card-title>
-            <v-card-subtitle>
-              ${{ relatedProduct.price }}
-            </v-card-subtitle>
-          </v-card>
-        </v-slide-group-item>
-      </v-slide-group>
-    </v-col>
-  </v-row>
-
-  <!-- 产品评价 -->
-  <v-row class="mt-8">
-    <v-col cols="12">
-      <v-card>
-        <v-card-title class="d-flex justify-space-between align-center bg-grey-lighten-4 py-4 px-6">
-          <span>Customer Reviews</span>
-          <v-rating
-            v-model="averageRating"
-            readonly
-            half-increments
-            density="compact"
-          />
-        </v-card-title>
-
-        <v-list lines="three">
-          <v-list-item
-            v-for="review in reviews"
-            :key="review.id"
-            :subtitle="formatDate(review.created_at)"
-          >
-            <template v-slot:prepend>
-              <v-avatar color="grey-lighten-1">
-                <v-icon icon="mdi-account"/>
-              </v-avatar>
-            </template>
-
-            <template v-slot:title>
-              <div class="d-flex align-center">
-                <span class="font-weight-bold">{{ review.user_name }}</span>
-                <v-rating
-                  v-model="review.rating"
-                  readonly
-                  density="compact"
-                  size="small"
-                  class="ml-4"
-                />
-              </div>
-            </template>
-
-            <template v-slot:text>
-              {{ review.comment }}
-            </template>
-          </v-list-item>
-        </v-list>
-
-        <!-- 写评价按钮 -->
-        <v-card-actions class="justify-center pa-4">
-          <v-btn
-            color="primary"
-            variant="outlined"
-            @click="showReviewDialog = true"
-          >
-            Write a Review
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
-
-  <!-- 写评价对话框 -->
-  <v-dialog v-model="showReviewDialog" max-width="600px">
-    <v-card>
-      <v-card-title>Write a Review</v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="submitReview">
-          <v-rating
-            v-model="newReview.rating"
-            class="mb-4"
-          />
-          <v-textarea
-            v-model="newReview.comment"
-            label="Your Review"
-            rows="4"
-            :rules="[v => !!v || 'Review is required']"
-          />
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer/>
-        <v-btn
-          variant="text"
-          @click="showReviewDialog = false"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          color="primary"
-          variant="text"
-          :loading="submittingReview"
-          @click="submitReview"
-        >
-          Submit
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -540,7 +354,9 @@ const toggleFavorite = async () => {
 const fetchProduct = async () => {
   try {
     const productId = parseInt(route.params.id as string)
-    product.value = await productService.getProduct(productId)
+    const response = await productService.getProduct(productId)
+    product.value = response.attributes
+    console.log("product: ", product.value)
     // 检查是否已收藏
     isFavorited.value = await favoriteService.checkFavorite(productId)
   } catch (error) {
@@ -548,54 +364,8 @@ const fetchProduct = async () => {
   }
 }
 
-const relatedProducts = ref<Product[]>([])
-// 评价相关
-const reviews = ref([])
-const averageRating = ref(0)
-const showReviewDialog = ref(false)
-const submittingReview = ref(false)
-const newReview = ref({
-  rating: 5,
-  comment: ''
-})
-
-// 获取相关产品
-const fetchRelatedProducts = async () => {
-  if (!product.value?.categories?.length) return
-
-  try {
-    const category_ids = product.value.categories.map(c => c.id)
-    const response = await productService.getProducts({
-      category_id: category_ids[0],
-      page: 1,
-      per_page: 10
-    })
-    relatedProducts.value = response.data.filter(p => p.id !== product.value?.id)
-  } catch (error) {
-    console.error('Failed to fetch related products:', error)
-  }
-}
-
-// 提交评价
-const submitReview = async () => {
-  if (!product.value || !newReview.value.comment) return
-
-  submittingReview.value = true
-  try {
-    // TODO: 实现评价提交API
-    showReviewDialog.value = false
-    // 刷新评价列表
-    fetchReviews()
-  } catch (error) {
-    console.error('Failed to submit review:', error)
-  } finally {
-    submittingReview.value = false
-  }
-}
-
 onMounted(() => {
   fetchProduct()
-  fetchRelatedProducts()
 })
 </script>
 
@@ -611,19 +381,4 @@ onMounted(() => {
 :deep(.v-btn--disabled) {
   opacity: 0.5;
 }
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.v-slide-group {
-  background: transparent !important;
-}
-
 </style>

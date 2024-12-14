@@ -3,7 +3,7 @@ import type { ApiResponse } from '@/types/response'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
-  timeout: 10000,
+  timeout: 100000,
   withCredentials: true
 })
 
@@ -13,7 +13,7 @@ api.interceptors.request.use(config => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
-  console.log("config: ", config)
+  // console.log("config: ", config)
   return config
 })
 

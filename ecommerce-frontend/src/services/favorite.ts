@@ -25,6 +25,7 @@ export const favoriteService = {
   // 检查是否已收藏
   async checkFavorite(productId: number) {
     const response = await api.get<{ is_favorited: boolean }>(`/favorites/check/${productId}`)
+    console.log("checkFavorite: ", response.data.is_favorited)
     return response.data.is_favorited
   }
 }
