@@ -7,9 +7,11 @@ class OrderSerializer
       {
         id: item.id,
         product_name: item.product.product_name,
+        description: item.product.description,
         quantity: item.quantity,
         unit_price: item.unit_price,
-        total_price: item.total_price
+        total_price: item.total_price,
+        image_url: item.product.image_url
       }
     end
   end

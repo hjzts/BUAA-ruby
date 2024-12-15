@@ -157,7 +157,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { userService } from '@/utils/user'
+import { userService } from '@/utils/user.ts'
 
 interface UserData {
   username: string

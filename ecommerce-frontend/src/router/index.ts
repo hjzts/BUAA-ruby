@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -7,13 +6,13 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'root',
+      component: () => import('../views/products/ProductList.vue')
     },
     {
       path: '/home',
       name: 'home',
-      component: HomeView,
+      component: () => import('../views/HomeView.vue')
     },
     {
       path: '/login',
@@ -28,25 +27,20 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('../views/ProfileView.vue'),
+      component: () => import('../views/Auth/ProfileView.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/profile/edit',
       name: 'profile-edit',
-      component: () => import('../views/ProfileEdit.vue'),
+      component: () => import('../views/Auth/ProfileEdit.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/password/change',
       name: 'password-change',
-      component: () => import('../views/PasswordChange.vue'),
+      component: () => import('../views/Auth/PasswordChange.vue'),
       meta: { requiresAuth: true }
-    },
-    {
-      path: '/only-products',
-      name: 'only-products',
-      component: () => import('../views/products/ProductsGrid.vue')
     },
     {
       path: '/admin/products',
@@ -67,7 +61,7 @@ const router = createRouter({
     {
       path: '/favorites',
       name: 'favorites',
-      component: () => import('../views/FavoritesView.vue'),
+      component: () => import('../views/favorites/FavoritesView.vue'),
       meta: { requiresAuth: true }
     },
     {

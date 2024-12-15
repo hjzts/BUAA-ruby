@@ -39,7 +39,7 @@ export const userService = {
   },
 
   async getProfile() {
-    const response = await api.get<{data: User}>('/api/v1/profile')
+    const response = await api.get('/api/v1/profile')
     console.log("response: ",response)
     return response.data
   }

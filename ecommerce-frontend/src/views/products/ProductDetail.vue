@@ -104,20 +104,13 @@
             <h3 class="text-h6 mb-3">Design</h3>
             <v-select
               v-model="selectedDesign"
-              :items="product.product_designs"
-              item-title="design.design_number"
+              :items="designOptions"
+              item-title="title"
               item-value="id"
               label="Select Design"
               variant="outlined"
               density="comfortable"
-            >
-              <template v-slot:item="{ item }">
-                <span>{{ item.design.design_number }}</span>
-                <span v-if="item.price_adjustment" class="text-grey">
-                  (+${{ item.price_adjustment }})
-                </span>
-              </template>
-            </v-select>
+            />
           </div>
 
           <!-- 数量选择 -->
@@ -264,7 +257,6 @@ const snackbar = ref({
 // 计算总价
 const calculateTotalPrice = computed(() => {
   let price = eval(product.value?.price) || 0 as number
-
   if (selectedColor.value?.price_adjustment) {
     price += eval(selectedColor.value.price_adjustment)
   }
@@ -274,11 +266,6 @@ const calculateTotalPrice = computed(() => {
   if (selectedDesign.value?.price_adjustment) {
     price += eval(selectedDesign.value.price_adjustment)
   }
-  console.log("selectedColor: ", selectedColor.value, " type: ", typeof selectedColor.value?.price_adjustment)
-  console.log("selectedSize: ", selectedSize.value, " type: ", typeof selectedSize.value)
-  console.log("selectedDesign: ", selectedDesign.value, " type: ", typeof selectedDesign.value)
-  console.log("price: ", price, " type: ", typeof price)
-  console.log("price_after: ", price, " type: ", typeof price)
   return (price * quantity.value).toFixed(2)
 })
 
@@ -372,6 +359,16 @@ const fetchProduct = async () => {
     console.error('Failed to fetch product:', error)
   }
 }
+
+
+const designOptions = computed(() =>
+  product.value.product_designs.map(pd => ({
+    id: pd.id,
+    title: pd.design.design_number,
+    price_adjustment: pd.price_adjustment,
+    design: pd.design
+  }))
+)
 
 onMounted(() => {
   fetchProduct()

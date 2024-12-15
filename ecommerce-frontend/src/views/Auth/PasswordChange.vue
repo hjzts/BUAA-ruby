@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { userService } from '@/utils/user'
+import { userService } from '@/utils/user.ts'
 
 const form = ref({
   current_password: '',

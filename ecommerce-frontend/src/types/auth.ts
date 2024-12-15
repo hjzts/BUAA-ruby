@@ -1,3 +1,5 @@
+import type { User } from '@/types/user.ts'
+
 export interface User {
     id: number
     email: string
