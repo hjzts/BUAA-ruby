@@ -10,6 +10,8 @@ deploy-project:
   script:
     - rsync -arv --delete  --exclude="*.sqlite3" ./ecommerce-backend /
     - cd /ecommerce-backend
+    - cp /root/22373058/ecommerce-backend/config/master.key /ecommerce-backend/config/master.key
+    - cp /root/22373058/ecommerce-backend/config/credentials/production.key /ecommerce-backend/config/credentials/production.key
     - bundle install
     - rails db:migrate
     - rails db:seed
