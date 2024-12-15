@@ -226,13 +226,150 @@
       </v-card>
     </v-dialog>
   </v-container>
+
+
+  <!-- 结算对话框 -->
+  <v-dialog v-model="checkoutDialog" max-width="800" persistent>
+    <v-card>
+      <v-card-title class="bg-primary text-white">
+        Checkout
+      </v-card-title>
+
+      <!-- 结算表单 -->
+      <v-card-text class="pt-4">
+        <v-row>
+          <!-- 左侧：订单项目 -->
+          <v-col cols="12" md="6">
+            <h3 class="text-h6 mb-4">Order Items</h3>
+            <v-list>
+              <v-list-item
+                v-for="item in selectedCartItems"
+                :key="item.id"
+                density="compact"
+              >
+                <template v-slot:prepend>
+                  <v-avatar size="40">
+                    <v-img :src="item.attributes.product.image_url || '/placeholder.png'" cover />
+                  </v-avatar>
+                </template>
+                <v-list-item-title>
+                  {{ item.attributes.product.product_name }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  Qty: {{ item.attributes.quantity }} × ${{ item.attributes.product.price }}
+                </v-list-item-subtitle>
+                <template v-slot:append>
+                  <div class="text-primary">
+                    ${{ (item.attributes.quantity * item.attributes.product.price).toFixed(2) }}
+                  </div>
+                </template>
+              </v-list-item>
+
+              <v-divider class="my-2"/>
+
+              <!-- 总计 -->
+              <v-list-item>
+                <v-list-item-title class="text-h6">
+                  Total Amount
+                </v-list-item-title>
+                <template v-slot:append>
+                  <div class="text-h6 text-primary">
+                    ${{ subtotal.toFixed(2) }}
+                  </div>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-col>
+
+          <!-- 右侧：收货信息表单 -->
+          <v-col cols="12" md="6">
+            <h3 class="text-h6 mb-4">Shipping Information</h3>
+            <v-form ref="form" v-model="formValid">
+              <v-text-field
+                v-model="shippingForm.recipient_name"
+                label="Recipient Name"
+                :rules="[v => !!v || 'Name is required']"
+                variant="outlined"
+                density="comfortable"
+                class="mb-2"
+              />
+
+              <v-text-field
+                v-model="shippingForm.phone_number"
+                label="Phone Number"
+                :rules="[
+                  v => !!v || 'Phone number is required',
+                  v => /^\d{10,11}$/.test(v) || 'Invalid phone number'
+                ]"
+                variant="outlined"
+                density="comfortable"
+                class="mb-2"
+              />
+
+              <v-textarea
+                v-model="shippingForm.shipping_address"
+                label="Shipping Address"
+                :rules="[v => !!v || 'Address is required']"
+                variant="outlined"
+                density="comfortable"
+                auto-grow
+                rows="3"
+                class="mb-2"
+              />
+
+              <v-text-field
+                v-model="shippingForm.postal_code"
+                label="Postal Code"
+                :rules="[
+                  v => !!v || 'Postal code is required',
+                  v => /^\d{5,6}$/.test(v) || 'Invalid postal code'
+                ]"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-form>
+          </v-col>
+        </v-row>
+      </v-card-text>
+
+      <!-- 操作按钮 -->
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          variant="text"
+          @click="checkoutDialog = false"
+          :disabled="processing"
+        >
+          Cancel
+        </v-btn>
+        <v-btn
+          color="primary"
+          :loading="processing"
+          :disabled="!formValid"
+          @click="confirmCheckout"
+        >
+          Place Order
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- 结果提示 -->
+  <v-snackbar
+    v-model="snackbar.show"
+    :color="snackbar.color"
+    :timeout="3000"
+  >
+    {{ snackbar.text }}
+  </v-snackbar>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import type { CartItem } from '@/types/cart'
 import { cartService } from '@/services/cart'
+import { orderService } from '@/services/order'
 
 const router = useRouter()
 const loading = ref(false)
@@ -240,6 +377,14 @@ const processing = ref(false)
 const cartItems = ref<CartItem[]>([])
 const selectedItems = ref<number[]>([])
 const clearDialog = ref(false)
+const checkoutDialog = ref(false)
+const formValid = ref(false)
+const form = ref<any>(null)
+const snackbar = ref({
+  show: false,
+  text: '',
+  color: 'success'
+})
 
 // 计算属性
 const totalQuantity = computed(() =>
@@ -313,18 +458,106 @@ const clearCart = async () => {
   }
 }
 
-// 结算
+// 收货信息表单
+const shippingForm = ref({
+  recipient_name: '',
+  phone_number: '',
+  shipping_address: '',
+  postal_code: ''
+})
+
+// 选中的购物车项
+const selectedCartItems = computed(() =>
+  cartItems.value.filter(item => selectedItems.value.includes(item.id))
+)
+
+// 显示检查结果
+const showMessage = (text: string, color: string = 'success') => {
+  snackbar.value = {
+    show: true,
+    text,
+    color
+  }
+}
+
+// 开始结算
 const checkout = () => {
   if (!selectedItems.value.length) return
-
-  // 跳转到结算页面，并传递选中的商品ID
-  // router.push({
-  //   name: 'checkout',
-  //   query: {
-  //     items: selectedItems.value.join(',')
-  //   }
-  // })
+  console.log("selectedItems: ", selectedCartItems.value)
+  checkoutDialog.value = true
 }
+
+// 确认结算
+const confirmCheckout = async () => {
+  if (!form.value.validate()) return
+
+  processing.value = true
+  try {
+    // 创建订单
+    console.log("shippingForm: ", shippingForm.value)
+    const orderData = {
+      order: shippingForm.value,
+      items: selectedCartItems.value.map(item => ({
+        product_id: item.attributes.product.id,
+        quantity: item.attributes.quantity,
+      }))
+    }
+    console.log("orderData: ", orderData)
+    const response = await orderService.createOrder(orderData)
+    console.log("create order response: ", response)
+
+    // 从购物车中移除已购买的商品
+    await Promise.all(
+      selectedCartItems.value.map(item =>
+        cartService.removeFromCart(item.id)
+      )
+    )
+
+    // 显示成功消息
+    showMessage('Order placed successfully!')
+
+    // 关闭对话框
+    checkoutDialog.value = false
+
+    // 重置表单
+    shippingForm.value = {
+      recipient_name: '',
+      phone_number: '',
+      shipping_address: '',
+      postal_code: ''
+    }
+
+    // 更新购物车
+    await fetchCartItems()
+
+    // 跳转到订单详情页
+    router.push({
+      name: 'order-detail',
+      params: { id: response.data.id }
+    })
+  } catch (error) {
+    console.error('Failed to create order:', error)
+    showMessage('Failed to place order. Please try again.', 'error')
+  } finally {
+    processing.value = false
+  }
+}
+
+// 监听结算对话框关闭
+watch(checkoutDialog, (newValue) => {
+  if (!newValue) {
+    // 重置表单
+    shippingForm.value = {
+      recipient_name: '',
+      phone_number: '',
+      shipping_address: '',
+      postal_code: ''
+    }
+    if (form.value) {
+      form.value.reset()
+    }
+  }
+})
 
 onMounted(() => {
   fetchCartItems()
@@ -348,6 +581,18 @@ onMounted(() => {
 }
 
 .v-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.v-dialog {
+  transition: transform 0.3s ease;
+}
+
+.v-dialog--active {
+  transform: scale(1);
+}
+
+.v-dialog:not(.v-dialog--active) {
   transform: scale(0.95);
 }
 </style>

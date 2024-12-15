@@ -219,9 +219,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { CartItem } from '@/types/cart'
-import { cartService } from '@/services/cart'
-import { orderService } from '@/services/order'
+import type { CartItem } from '@/types/cart.ts'
+import { cartService } from '@/services/cart.ts'
+import { orderService } from '@/services/order.ts'
 
 const route = useRoute()
 const router = useRouter()
@@ -270,6 +270,8 @@ const fetchCartItems = async () => {
     cartItems.value = response.data.filter(item =>
       selectedIds.includes(item.id)
     )
+
+    console.log("cartItems: ", cartItems.value)
 
     if (!cartItems.value.length) {
       router.push('/cart')

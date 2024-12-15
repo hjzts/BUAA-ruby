@@ -11,9 +11,13 @@ deploy-project:
   stage: deploy
   script:
     - rsync -arv --delete  --exclude="*.sqlite3" ./project /
-    - cd /project
+    - cd /ecommerce-frontend
+    - npm install
+    - npm run dev
+    - cd /ecommerce-backend
     - bundle install
     - rails db:migrate
+    - rails db:seed
     - sv restart project
   only:
   - project

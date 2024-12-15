@@ -26,7 +26,7 @@ class Api::V1::OrdersController < ApplicationController
   def create
     @order = current_user.orders.build(order_params)
     # Rails.logger.info(current_user)
-
+    Rails.logger.info(params[:items])
     # 先检查库存是否充足
     inventory_check_results = check_inventory(params[:items])
     if inventory_check_results[:has_insufficient]
@@ -35,6 +35,9 @@ class Api::V1::OrdersController < ApplicationController
       }, status: :unprocessable_entity
       return
     end
+
+    Rails.logger.info(@order)
+    Rails.logger.info("qaaaaaaaaaaaaaaaa")
 
     Order.transaction do
       if @order.save
@@ -47,6 +50,8 @@ class Api::V1::OrdersController < ApplicationController
           )
           cart_item.product.update_stock!(cart_item.quantity, :decrease)
         end
+
+
 
         @order.update!(total_amount: @order.order_items.sum(&:total_price))
         current_user.cart_items.destroy_all # 清空购物车
@@ -122,10 +127,13 @@ class Api::V1::OrdersController < ApplicationController
 
   # 检查商品库存
   def check_inventory(items)
+    Rails.logger.info(items)
+
     insufficient_items = []
 
     items.each do |item|
       product = Product.find(item[:product_id])
+      Rails.logger.info(product)
       if product.stock_quantity < item[:quantity].to_i
         insufficient_items << "#{product.product_name} (requested: #{item[:quantity]}, available: #{product.stock_quantity})"
       end
