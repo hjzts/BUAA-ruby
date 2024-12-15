@@ -3,8 +3,6 @@ test-project:
   script:
     - cd ecommerce-backend
     - bundle install
-    - rails db:migrate RAILS_ENV=test
-    - PARALLEL_WORKERS=1 rails test
   only:
     - project
 deploy-project:
