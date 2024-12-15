@@ -35,7 +35,7 @@ export interface Product {
   updated_at: string
 
   // 尺码相关
-  sizes: Array<{
+  product_sizes: Array<{
     id: number
     size_id: number
     stock_quantity: number
@@ -48,7 +48,7 @@ export interface Product {
   }>
 
   // 颜色相关
-  colors: Array<{
+  product_colors: Array<{
     id: number
     color_id: number
     price_adjustment: number
@@ -60,7 +60,7 @@ export interface Product {
   }>
 
   // 设计相关
-  designs: Array<{
+  product_designs: Array<{
     id: number
     design_id: number
     price_adjustment: number

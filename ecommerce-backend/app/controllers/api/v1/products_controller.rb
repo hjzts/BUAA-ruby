@@ -18,6 +18,15 @@ class Api::V1::ProductsController < ApplicationController
     # 搜索
     @products = @products.where("product_name LIKE ?", "%#{params[:search]}%") if params[:search].present?
 
+    # 预加载关联数据
+    @products = @products.includes(
+      :image_attachment,
+      product_sizes: :size,
+      product_colors: :color,
+      product_designs: :design,
+      categories: {}
+    )
+
     # 排序
     # @products = @products.order(params[:order] => params[:direction]) if params[:order].present?
 
@@ -35,7 +44,7 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def show
-    # render json: ProductSerializer.new(@product).serializable_hash[:data]
+    render json: ProductSerializer.new(@product).serializable_hash[:data]
     # 我希望这里把product相关的信息都返回，包括product_sizes, product_designs, product_colors, product_categories
     # render json: ProductSerializer.new(@product, include: [:product_sizes, :product_designs, :product_colors, :product_categories])
   end
@@ -91,7 +100,13 @@ class Api::V1::ProductsController < ApplicationController
   private
 
   def set_product
-    @product = Product.find(params[:id])
+    @product = Product.includes(
+      :image_attachment,
+      product_sizes: :size,
+      product_colors: :color,
+      product_designs: :design,
+      categories: {}
+    ).find(params[:id])
   end
 
   def product_params
@@ -100,7 +115,9 @@ class Api::V1::ProductsController < ApplicationController
       :description,
       :price,
       :stock_quantity,
-      :status
+      :status,
+      :image,
+      category_ids: []
     )
   end
 end

@@ -46,11 +46,11 @@
           />
 
           <!-- 颜色选择 -->
-          <div v-if="product.colors?.length" class="mb-6">
+          <div v-if="product.product_colors?.length" class="mb-6">
             <h3 class="text-h6 mb-3">Color</h3>
             <div class="d-flex flex-wrap gap-2">
               <v-tooltip
-                v-for="color in product.colors"
+                v-for="color in product.product_colors"
                 :key="color.id"
                 :text="color.color.description"
                 location="top"
@@ -79,11 +79,11 @@
           </div>
 
           <!-- 尺寸选择 -->
-          <div v-if="product.sizes?.length" class="mb-6">
+          <div v-if="product.product_sizes?.length" class="mb-6">
             <h3 class="text-h6 mb-3">Size</h3>
             <div class="d-flex flex-wrap gap-2">
               <v-btn
-                v-for="size in product.sizes"
+                v-for="size in product.product_sizes"
                 :key="size.id"
                 :variant="selectedSize?.id === size.id ? 'elevated' : 'outlined'"
                 :disabled="size.stock_quantity === 0"
@@ -100,11 +100,11 @@
           </div>
 
           <!-- 设计选择 -->
-          <div v-if="product.designs?.length" class="mb-6">
+          <div v-if="product.product_designs?.length" class="mb-6">
             <h3 class="text-h6 mb-3">Design</h3>
             <v-select
               v-model="selectedDesign"
-              :items="product.designs"
+              :items="product.product_designs"
               item-title="design.design_number"
               item-value="id"
               label="Select Design"
@@ -263,16 +263,22 @@ const snackbar = ref({
 
 // 计算总价
 const calculateTotalPrice = computed(() => {
-  let price = product.value?.price || 0
+  let price = eval(product.value?.price) || 0 as number
+
   if (selectedColor.value?.price_adjustment) {
-    price += selectedColor.value.price_adjustment
+    price += eval(selectedColor.value.price_adjustment)
   }
   if (selectedSize.value?.price_adjustment) {
-    price += selectedSize.value.price_adjustment
+    price += eval(selectedSize.value.price_adjustment)
   }
   if (selectedDesign.value?.price_adjustment) {
-    price += selectedDesign.value.price_adjustment
+    price += eval(selectedDesign.value.price_adjustment)
   }
+  console.log("selectedColor: ", selectedColor.value, " type: ", typeof selectedColor.value?.price_adjustment)
+  console.log("selectedSize: ", selectedSize.value, " type: ", typeof selectedSize.value)
+  console.log("selectedDesign: ", selectedDesign.value, " type: ", typeof selectedDesign.value)
+  console.log("price: ", price, " type: ", typeof price)
+  console.log("price_after: ", price, " type: ", typeof price)
   return (price * quantity.value).toFixed(2)
 })
 
@@ -373,9 +379,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.color-btn {
-  border-radius: 50%;
-}
 
 .gap-2 {
   gap: 8px;
@@ -383,5 +386,17 @@ onMounted(() => {
 
 :deep(.v-btn--disabled) {
   opacity: 0.5;
+}
+
+.color-btn {
+  border-radius: 50%; /* 使按钮变成圆形 */
+  transition: all 0.3s ease-in-out; /* 添加平滑的过渡效果 */
+}
+.color-btn:hover {
+  transform: scale(1.1); /* 悬停时放大按钮 */
+  filter: brightness(1.1); /* 增强亮度 */
+}
+.color-btn.selected {
+  border: 2px solid white; /* 选中时加边框 */
 }
 </style>

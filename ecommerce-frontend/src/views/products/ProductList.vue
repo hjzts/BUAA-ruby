@@ -147,17 +147,17 @@
                       <v-spacer/>
                       <div class="color-dots">
                         <!-- 首先判断product和colors是否存在 -->
-                        <template v-if="product?.colors?.length">
+                        <template v-if="product?.product_colors?.length">
                           <span
-                            v-for="product_color in product.colors.slice(0, 3)"
+                            v-for="product_color in product.product_colors.slice(0, 3)"
                             :key="product_color?.id"
                             class="color-dot"
                             :style="{
                               backgroundColor: getColorRGB(product_color)
                             }"
                           />
-                          <span v-if="product.colors.length > 3" class="more-colors">
-                            +{{ product.colors.length - 3 }}
+                          <span v-if="product.product_colors.length > 3" class="more-colors">
+                            +{{ product.product_colors.length - 3 }}
                           </span>
                         </template>
 
@@ -171,9 +171,9 @@
                     <div class="text-truncate">{{ product.description }}</div>
                     <div class="mt-2">
                       <!-- 有尺码数据时显示实际尺码 -->
-                      <template v-if="product?.sizes?.length">
+                      <template v-if="product?.product_sizes?.length">
                         <v-chip
-                          v-for="size in product.sizes.slice(0, 3)"
+                          v-for="size in product.product_sizes.slice(0, 3)"
                           :key="size?.id || index"
                           size="small"
                           class="mr-1"
@@ -182,12 +182,12 @@
                         </v-chip>
                         <!-- 显示更多尺码提示 -->
                         <v-chip
-                          v-if="product.sizes.length > 3"
+                          v-if="product.product_sizes.length > 3"
                           size="small"
                           class="mr-1"
                           variant="outlined"
                         >
-                          +{{ product.sizes.length - 3 }}
+                          +{{ product.product_sizes.length - 3 }}
                         </v-chip>
                       </template>
 
@@ -241,13 +241,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import debounce from 'lodash/debounce'
 import { productService, type Product } from '@/utils/product'
 import { colorService, type Color, type ProductColor } from '@/utils/color'
 import { sizeService, type Size } from '@/utils/size'
 import { designService, type Design } from '@/utils/design'
+import type { ProductFilters } from '@/types/product.ts'
 
 const router = useRouter()
 const drawer = ref(false)
@@ -268,26 +269,14 @@ const filters = ref({
   selectedDesigns: [] as number[]
 })
 
-// 获取产品列表
-const fetchProducts = async () => {
-  loading.value = true
-  try {
-    const response = await productService.getProducts({
-      page: page.value,
-      ...filters.value
-    })
-    console.log('response:', response)
-    products.value = response.products.map(item => ({
-      id: Number(item.id),
-      ...item.attributes
-    }))
-    totalPages.value = response.meta.total_pages
-  } catch (error) {
-    console.error('Failed to fetch products:', error)
-  } finally {
-    loading.value = false
-  }
-}
+const getApiFilters = computed((): ProductFilters => ({
+  search: filters.value.search,
+  min_price: filters.value.priceRange[0],
+  max_price: filters.value.priceRange[1],
+  color_ids: filters.value.selectedColors.length > 0 ? filters.value.selectedColors : undefined,
+  size_ids: filters.value.selectedSizes.length > 0 ? filters.value.selectedSizes : undefined,
+  design_ids: filters.value.selectedDesigns.length > 0 ? filters.value.selectedDesigns : undefined
+}))
 
 // 获取过滤选项
 const fetchFilterOptions = async () => {
@@ -302,6 +291,27 @@ const fetchFilterOptions = async () => {
     designs.value = designsData
   } catch (error) {
     console.error('Failed to fetch filter options:', error)
+  }
+}
+
+// 获取产品列表
+const fetchProducts = async () => {
+  loading.value = true
+  try {
+    const response = await productService.getProducts({
+      page: page.value,
+      ...getApiFilters.value
+    })
+    console.log('response:', response)
+    products.value = response.products.map(item => ({
+      id: Number(item.id),
+      ...item.attributes
+    }))
+    totalPages.value = response.meta.total_pages
+  } catch (error) {
+    console.error('Failed to fetch products:', error)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -361,7 +371,7 @@ const getColorRGB = (product_color: ProductColor | null): string => {
 
 // 获取尺码名称，提供默认值
 const getSizeName = (size: Size | null): string => {
-  return size?.size_name ?? 'N/A'
+  return size?.size?.size_name ?? 'N/A'
 }
 </script>
 

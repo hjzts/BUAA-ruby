@@ -7,7 +7,10 @@ export const productService = {
   // 获取产品列表
   async getProducts(filters: ProductFilters = {}) {
     const response = await api.get<PaginatedResponse<Product>>('/products', {
-      params: filters
+      params: {
+        filters,
+        include: 'product_sizes.size,product_colors.color,product_designs.design,categories'
+      }
     })
     return response.data
   },
