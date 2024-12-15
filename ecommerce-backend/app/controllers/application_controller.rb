@@ -1,4 +1,8 @@
 class ApplicationController < ActionController::API
+    def fallback_index_html
+      render file: 'public/index.html'
+    end
+
     before_action :configure_permitted_parameters, if: :devise_controller?
 
     protected

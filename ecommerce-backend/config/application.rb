@@ -8,6 +8,12 @@ Bundler.require(*Rails.groups)
 
 module EcommerceBackend
   class Application < Rails::Application
+    config.middleware.insert_before 0, Rack::Static, urls: [/^\/assets/], root: 'public'
+    # 处理SPA路由
+    config.middleware.insert_before 0, Rack::Rewrite do
+      rewrite %r{^(?!/(api|rails|assets)).*$}, '/index.html'
+    end
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2
 
