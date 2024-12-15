@@ -1,0 +1,1 @@
+import{a}from"./api-CfODcUyk.js";const t={getFavorites:async()=>(await a.get("/favorites")).data,addFavorite:async t=>(await a.post("/favorites",{product_id:t})).data,async removeFavorite(t){await a.delete(`/favorites/${t}`)},checkFavorite:async t=>(await a.get(`/favorites/check/${t}`)).data.is_favorited};export{t as f};

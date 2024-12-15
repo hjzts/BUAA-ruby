@@ -4,7 +4,8 @@ import router from '@/router'
 
 const api = axios.create({
   // baseURL: import.meta.env.VITE_API_URL as string,
-  baseURL: 'http://localhost:3000' as string,
+  // baseURL: 'http://localhost:3000' as string,
+  baseURL: 'http://22373058.project.rubyapp.act.buaa.edu.cn:9000', // 开发环境
   withCredentials: true
 })
 
