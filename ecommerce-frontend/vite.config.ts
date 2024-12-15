@@ -17,7 +17,7 @@ export default defineConfig({
   },
   build: {
     // 将文件输出到Rails的public目录
-    outDir: '../backend/public',
+    outDir: '../ecommerce-backend/public',
     // 生成的静态资源在上面添加hash
     assetsDir: 'assets',
     // 清空输出目录
