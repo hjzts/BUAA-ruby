@@ -8,7 +8,7 @@ test-project:
 deploy-project:
   stage: deploy
   script:
-    - rsync -arv --delete  --exclude="*.sqlite3" ./project /
+    - rsync -arv --delete  --exclude="*.sqlite3" ./ecommerce-backend /
     - cd /ecommerce-frontend
     - npm install
     - npm run dev
