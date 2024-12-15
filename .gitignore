@@ -93,3 +93,6 @@
 
 # Ignore master key for decrypting credentials and more.
 /blog4/config/master.key
+
+ecommerce-frontend/
+ecommerce-backend/
