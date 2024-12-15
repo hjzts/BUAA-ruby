@@ -33,7 +33,7 @@
     <!-- 主要内容 -->
     <v-row>
       <!-- 左侧：订单信息 -->
-      <v-col cols="12" md="8">
+      <v-col cols="12" md="6">
         <!-- 商品列表 -->
         <v-card color="secondary" class="mb-4" hover>
           <v-card-title class="bg-surface-variant" >
@@ -130,7 +130,7 @@
       </v-col>
 
       <!-- 右侧：状态和操作 -->
-      <v-col cols="12" md="4">
+      <v-col cols="12" md="6">
         <!-- 状态卡片 -->
         <v-card class="mb-4">
           <v-card-title class="bg-surface-variant" hover>
@@ -201,40 +201,91 @@
         </v-card>
 
         <!-- 操作卡片 -->
-        <v-card>
-          <v-card-title class="bg-surface-variant" hover>
+        <v-card elevation="3" rounded="lg" class="mb-4">
+          <!-- 卡片标题 -->
+          <v-card-title class="bg-surface-variant text-white rounded-t-lg">
+            <v-icon class="mr-2">mdi-cog</v-icon>
             Actions
           </v-card-title>
-          <v-card-text>
-            <template v-if="order.status === 'pending'">
+
+          <!-- 卡片内容 -->
+          <v-card-text class="d-flex flex-column align-center py-4">
+            <!-- 如果状态为 pending -->
+            <template v-if="order.attributes.status === 'pending'">
               <v-btn
                 color="primary"
                 block
-                class="mb-2"
+                class="mb-3"
+                elevation="2"
+                large
                 @click="showPayDialog"
               >
+                <v-icon left>mdi-cash</v-icon>
                 Pay Now
               </v-btn>
               <v-btn
                 color="error"
                 block
-                variant="outlined"
+                elevation="1"
+                outlined
+                large
                 @click="showCancelDialog"
               >
+                <v-icon left>mdi-cancel</v-icon>
                 Cancel Order
               </v-btn>
             </template>
-            <template v-else-if="order.status === 'shipped'">
+
+            <!-- 如果状态为 shipped -->
+            <template v-else-if="order.attributes.status === 'shipped'">
               <v-btn
                 color="success"
                 block
+                elevation="2"
+                large
                 @click="confirmDelivery"
               >
+                <v-icon left>mdi-truck-check</v-icon>
                 Confirm Delivery
               </v-btn>
             </template>
+
+            <!-- 如果状态为 paid -->
+            <template v-else-if="order.attributes.status === 'paid'">
+              <v-btn
+                color="success"
+                block
+                outlined
+                large
+                disabled
+              >
+                <v-icon left>mdi-check-circle</v-icon>
+                已支付
+              </v-btn>
+            </template>
+
+            <!-- 如果状态为 delivered -->
+            <template v-else-if="order.attributes.status === 'delivered'">
+              <v-btn
+                color="success"
+                block
+                outlined
+                large
+                disabled
+              >
+                <v-icon left>mdi-package-variant-closed</v-icon>
+                已接收
+              </v-btn>
+            </template>
           </v-card-text>
+
+          <!-- 卡片底部装饰 -->
+          <v-divider></v-divider>
+          <v-card-subtitle class="text-center text-caption py-2">
+            Manage your order actions here
+          </v-card-subtitle>
         </v-card>
+
       </v-col>
     </v-row>
 
@@ -424,6 +475,6 @@ onMounted(() => {
 
 <style scoped>
 .bg-surface-variant {
-  background-color: #8bbe8c !important;
+  background-color: #b771cb !important;
 }
 </style>

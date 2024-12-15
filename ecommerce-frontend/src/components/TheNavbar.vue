@@ -16,7 +16,6 @@
           <v-col cols="auto" >
             <v-btn
               to="/"
-              color="deep-orange-accent-2"
               prepend-icon="mdi-home"
               text="true"
               class="text-decoration-none text-white"
@@ -28,7 +27,6 @@
           <v-col cols="auto" >
             <v-btn
               to="/favorites"
-              color="deep-orange-accent-2"
               prepend-icon="mdi-heart"
               text="true"
               class="text-decoration-none text-white"
@@ -37,11 +35,21 @@
             </v-btn>
           </v-col>
 
+          <v-col cols="auto" >
+            <v-btn
+              to="/cart"
+              prepend-icon="mdi-cart"
+              text="true"
+              class="text-decoration-none text-white"
+            >
+              我的购物车
+            </v-btn>
+          </v-col>
+
             <v-col cols="auto" >
               <v-btn
                 to="/orders"
-                color="deep-orange-accent-2"
-                prepend-icon="mdi-cart"
+                prepend-icon="mdi-file-check"
                 text="true"
                 class="text-decoration-none text-white"
               >

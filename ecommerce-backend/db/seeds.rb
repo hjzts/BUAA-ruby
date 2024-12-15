@@ -188,48 +188,67 @@ puts "Creating orders..."
 # 创建订单
 order_statuses = ['pending', 'paid', 'shipped', 'delivered', 'cancelled']
 
-User.where(role: 'buyer').each do |user|
-  rand(2..5).times do
-    status = order_statuses.sample
-    created_at = Time.current - rand(1..60).days
+ActiveRecord::Base.transaction do
+  User.where(role: 'buyer').each do |user|
+    rand(2..5).times do
+      status = order_statuses.sample
+      created_at = Time.current - rand(1..60).days
 
-    order = Order.create!(
-      user: user,
-      recipient_name: user.username,
-      shipping_address: "#{rand(100..999)} Main St, City",
-      phone_number: "1234567890",
-      postal_code: "12345",
-      status: status,
-      total_amount: 0,
-      created_at: created_at,
-      paid_at: status == 'pending' ? nil : created_at + 1.day,
-      shipped_at: ['shipped', 'delivered'].include?(status) ? created_at + 2.days : nil,
-      delivered_at: status == 'delivered' ? created_at + 4.days : nil,
-      cancelled_at: status == 'cancelled' ? created_at + 1.day : nil,
-      cancellation_reason: status == 'cancelled' ? "Customer cancelled the order" : nil
-    )
-
-    # 创建订单项
-    total_amount = 0
-    rand(1..4).times do
-      product = Product.where(status: 'active').sample
-      quantity = rand(1..3)
-      unit_price = product.price
-      item_total = quantity * unit_price
-
-      OrderItem.create!(
-        order: order,
-        product: product,
-        quantity: quantity,
-        unit_price: unit_price,
-        total_price: item_total
+      order = Order.create!(
+        user: user,
+        recipient_name: user.username,
+        shipping_address: "#{rand(100..999)} Main St, City",
+        phone_number: "1234567890",
+        postal_code: "12345",
+        status: status,
+        total_amount: 0,
+        created_at: created_at,
+        paid_at: status == 'pending' ? nil : created_at + 1.day,
+        shipped_at: ['shipped', 'delivered'].include?(status) ? created_at + 2.days : nil,
+        delivered_at: status == 'delivered' ? created_at + 4.days : nil,
+        cancelled_at: status == 'cancelled' ? created_at + 1.day : nil,
+        cancellation_reason: status == 'cancelled' ? "Customer cancelled the order" : nil
       )
 
-      total_amount += item_total
-    end
+      # 创建订单项
+      total_amount = 0
+      rand(1..4).times do
+        product = Product.where(status: 'active').sample
+        quantity = rand(1..3)
+        unit_price = product.price
+        item_total = quantity * unit_price
 
-    # 更新订单总金额
-    order.update!(total_amount: total_amount)
+        OrderItem.create!(
+          order: order,
+          product: product,
+          quantity: quantity,
+          unit_price: unit_price,
+          total_price: item_total
+        )
+
+        total_amount += item_total
+      end
+
+      # puts "Order #{order.id} total amount: #{total_amount}"
+
+      # 更新订单总金额
+      # order.total_amount = total_amount
+      # if order.save
+      #   puts "save!!!!"
+      # else
+      #   puts "not save!!!!"
+      # end
+      order.update!(total_amount: total_amount)
+      # puts order.errors.full_messages          # 打印模型校验错误信息
+
+
+      # puts "Order #{order.id} true total amount: #{order.total_amount}"
+
+      # order.reload
+
+      # puts "Order #{order.id} true total amount: #{order.total_amount}"
+
+    end
   end
 end
 

@@ -62,7 +62,7 @@ Rails.application.routes.draw do
         end
       end
       resources :products do
-        resources :product_categories, only: [:create, :destroy], path: 'categories'
+        resources :product_categories, only: [:create, :destroy], path: "categories"
       end
       resources :cart_items do
         collection do

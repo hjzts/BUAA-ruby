@@ -96,6 +96,7 @@ class Api::V1::OrdersController < ApplicationController
   end
 
   def confirm_delivery
+    @order=Order.find(params[:id])
     if @order.deliver!
       render json: OrderSerializer.new(@order).serializable_hash
     else
@@ -114,7 +115,8 @@ class Api::V1::OrdersController < ApplicationController
       :recipient_name,
       :shipping_address,
       :phone_number,
-      :postal_code
+      :postal_code,
+      :total_amount
     )
   end
 

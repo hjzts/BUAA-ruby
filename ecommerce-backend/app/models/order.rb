@@ -7,7 +7,6 @@ class Order < ApplicationRecord
   has_many :products, through: :order_items
 
   validates :recipient_name, :shipping_address, :phone_number, :postal_code, presence: true
-  # validates :total_amount, numericality: { greater_than: 0 }
   validates :total_amount, numericality: { greater_than_or_equal_to: 0 }
   validates :phone_number, format: { with: /\A\d{10,11}\z/, message: "should be 10-11 digits" }
   validates :status, inclusion: { in: %w[pending paid shipped delivered cancelled] }
@@ -61,7 +60,7 @@ class Order < ApplicationRecord
 
   # 回调
   before_validation :set_initial_status, on: :create
-  before_validation :calculate_total_amount
+  # before_validation :calculate_total_amount
   after_create :update_product_stocks
 
   # 作用域
@@ -74,12 +73,12 @@ class Order < ApplicationRecord
 
   # 状态机方法
   def status_changeable?
-    !cancelled? && !delivered?
+    !(status==="cancelled" || status==="delivered")
   end
 
   # 更新订单状态的方法
   def pay!
-    return false unless pending?
+    return false unless status==="pending"
 
     transaction do
       update!(status: "paid", paid_at: Time.current)
@@ -87,7 +86,7 @@ class Order < ApplicationRecord
   end
 
   def ship!
-    return false unless paid?
+    return false unless status==="paid"
 
     transaction do
       update!(status: "shipped", shipped_at: Time.current)
@@ -95,7 +94,7 @@ class Order < ApplicationRecord
   end
 
   def deliver!
-    return false unless shipped?
+    return false unless status==="shipped"
 
     transaction do
       update!(status: "delivered", delivered_at: Time.current)
@@ -121,11 +120,6 @@ class Order < ApplicationRecord
 
   def calculate_total_amount
     self.total_amount = order_items.sum(&:total_price)
-  end
-
-  # 计算订单总金额
-  def calculate_total
-    order_items.sum(&:total_price)
   end
 
   def update_product_stocks
