@@ -11,21 +11,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.2].define(version: 2024_12_10_132235) do
-  create_table "blogs", force: :cascade do |t|
-    t.string "title"
-    t.text "content"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "comments", force: :cascade do |t|
-    t.integer "blog_id", null: false
-    t.text "content"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["blog_id"], name: "index_comments_on_blog_id"
-  end
-
   create_table "followships", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "following_user_id", null: false
@@ -47,7 +32,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_10_132235) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "comments", "blogs"
   add_foreign_key "followships", "users"
   add_foreign_key "followships", "users", column: "following_user_id"
 end
