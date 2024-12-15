@@ -2,7 +2,10 @@ import axios from 'axios'
 import type { ApiResponse } from '@/types/response'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+  // baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1',
+  baseURL: import.meta.env.PROD
+    ? '/api/v1'  // 生产环境
+    : 'http://localhost:3000/api/v1', // 开发环境
   timeout: 100000,
   withCredentials: true
 })

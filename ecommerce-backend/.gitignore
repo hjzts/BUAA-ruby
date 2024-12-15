@@ -33,3 +33,10 @@
 /config/master.key
 
 /config/credentials/production.key
+
+# backend/.gitignore
+/public/assets
+/public/index.html
+/public/manifest.json
+/public/robots.txt
+/public/assets/*

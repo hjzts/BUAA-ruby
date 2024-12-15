@@ -75,7 +75,11 @@ Rails.application.routes.draw do
     end
   end
 
-  get '*path', to: 'application#fallback_index_html', constraints: ->(request) {
+  # Handle frontend routes
+  get '*path', to: 'frontend#index', constraints: ->(request) do
     !request.xhr? && request.format.html?
-  }
+  end
+
+  # Root path
+  root 'frontend#index'
 end
