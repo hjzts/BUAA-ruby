@@ -27,9 +27,9 @@ Rails.application.configure do
   }
 
   # 配置静态文件压缩
-  config.assets.compress = true
-  config.assets.js_compressor = :terser
-  config.assets.css_compressor = :sass
+  # config.assets.compress = true
+  # config.assets.js_compressor = :terser
+  # config.assets.css_compressor = :sass
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
