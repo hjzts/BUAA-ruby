@@ -15,7 +15,7 @@ deploy-project:
     - bundle install
     - rails db:migrate
     - rails db:seed
-    - mv /project /project1
+    - rm -rf /project
     - mv /ecommerce-backend /project
     - cd /project
     - rails db:seed
